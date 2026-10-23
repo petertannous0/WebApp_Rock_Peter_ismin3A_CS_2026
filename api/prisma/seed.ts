@@ -6,6 +6,7 @@
  *
  * Runs at every `docker compose up` (service `migrate`): when a session
  * already exists, it does nothing, so the admin's changes are never overwritten.
+ * Same for the accounts: seeded only when there is none.
  *
  *   - the session: Monday 21 – Friday 25 June 2027, 4 rooms, 60 slots,
  *     rooms C and D closed on Thursday afternoon
@@ -14,10 +15,12 @@
  *     most of them sharing one company tutor (same-company rule, tutor clashes)
  *   - 25 teachers have entered their unavailability, 10 have not
  *   - 10 defenses already placed on Monday morning, all valid
+ *   - 3 demo accounts: the admin, a teacher and a student (password below)
  */
 import 'dotenv/config';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient, type Room, type Student, type Teacher } from '../src/generated/prisma/client.js';
+import { hashPassword } from '../src/auth/password.js';
 import { generateSlots } from '../src/session/slots.js';
 
 const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? 'file:./dev.db' });
@@ -98,10 +101,48 @@ const MONDAY = new Date(Date.UTC(2027, 5, 21));
 
 async function main(): Promise<void> {
   if ((await prisma.session.count()) > 0) {
-    console.log('✅ a session already exists: nothing seeded, nothing overwritten');
-    return;
+    console.log('✅ a session already exists: session data not seeded, nothing overwritten');
+  } else {
+    await seedSession();
   }
 
+  if ((await prisma.user.count()) > 0) {
+    console.log('✅ accounts already exist: demo accounts not seeded');
+  } else {
+    await seedAccounts();
+  }
+}
+
+/** The password of the three demo accounts, documented in README.md. */
+const DEMO_PASSWORD = 'soutenance2027';
+
+/**
+ * One account per role: the admin, and a teacher and a student who already
+ * have a defense placed, so that their schedule is not empty.
+ */
+async function seedAccounts(): Promise<void> {
+  const passwordHash = hashPassword(DEMO_PASSWORD);
+  await prisma.user.create({ data: { email: 'admin@castelmont.fr', passwordHash, role: 'ADMIN' } });
+
+  const first = await prisma.defense.findFirst({
+    orderBy: [{ slot: { dayIndex: 'asc' } }, { slot: { indexInDay: 'asc' } }, { room: { name: 'asc' } }],
+    include: { student: { include: { academicTutor: true } } },
+  });
+  const student = first?.student ?? (await prisma.student.findFirst({ include: { academicTutor: true }, orderBy: { id: 'asc' } }));
+  if (!student) return;
+  const teacher = student.academicTutor;
+
+  await prisma.user.create({
+    data: { email: teacher.email, passwordHash, role: 'ENSEIGNANT', teacher: { connect: { id: teacher.id } } },
+  });
+  await prisma.user.create({
+    data: { email: student.email, passwordHash, role: 'ELEVE', student: { connect: { id: student.id } } },
+  });
+
+  console.log(`✅ demo accounts (password ${DEMO_PASSWORD}): admin@castelmont.fr, ${teacher.email}, ${student.email}`);
+}
+
+async function seedSession(): Promise<void> {
   // The session, its rooms and its slots
   const session = await prisma.session.create({ data: { name: SESSION_NAME, startDate: MONDAY } });
   const rooms: Room[] = [];
