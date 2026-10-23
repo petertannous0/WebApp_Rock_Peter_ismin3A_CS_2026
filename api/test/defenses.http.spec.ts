@@ -85,4 +85,17 @@ describe('/defenses over HTTP', () => {
     await request(app.getHttpServer()).post('/defenses').set('Authorization', `Bearer ${teacher}`).send(proposal).expect(403);
     await request(app.getHttpServer()).get('/defenses').expect(401);
   });
+
+  it('gives each role its own schedule route, and only that one (F3)', async () => {
+    const student = await app.get(JwtService).signAsync({ sub: 3, email: 'l@etu.castelmont.fr', role: 'ELEVE' });
+    const server = app.getHttpServer();
+
+    await request(server).get('/me/defenses').set('Authorization', `Bearer ${student}`).expect(403);
+    await request(server).get('/me/defense').set('Authorization', `Bearer ${teacher}`).expect(403);
+    await request(server).get('/company-tutors/schedule').set('Authorization', `Bearer ${teacher}`).expect(403);
+    await request(server).get('/company-tutors/schedule').set('Authorization', `Bearer ${student}`).expect(403);
+
+    prisma.companyTutor.findMany.mockResolvedValue([]);
+    await request(server).get('/company-tutors/schedule').set('Authorization', `Bearer ${admin}`).expect(200);
+  });
 });
