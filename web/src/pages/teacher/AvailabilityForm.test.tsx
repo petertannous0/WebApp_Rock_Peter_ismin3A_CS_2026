@@ -12,6 +12,7 @@ const notAnswered: MyAvailability = { unavailable: [], defensesInUnavailableHalf
 function api(mine: MyAvailability = notAnswered, saved?: MyAvailability) {
   return fakeApi({
     'GET /session': () => Response.json(SESSION),
+    'GET /me/defenses': () => Response.json([]),
     'GET /me/unavailability': () => Response.json(mine),
     'PUT /me/unavailability': () => Response.json(saved ?? { ...mine, submittedAt: '2027-05-12T09:00:00.000Z' }),
   });
