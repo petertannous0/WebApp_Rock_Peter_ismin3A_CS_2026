@@ -107,6 +107,35 @@ await check('Only the ADMIN reaches the admin routes', 'RolesGuard and @Roles on
   return statuses.join(', ');
 });
 
+const asAdmin = (init = {}) => ({ ...init, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tokens.ADMIN}` } });
+let firstDefense;
+
+await check('The seeded defenses respect every rule', 'api/prisma/seed.ts, and the checker: GET /defenses', async () => {
+  const res = await get(`${API}/defenses`, asAdmin());
+  const defenses = await res.json();
+  if (!Array.isArray(defenses) || defenses.length === 0) throw new Error(`GET /defenses answered ${res.status}, no defense`);
+  const inConflict = defenses.filter((defense) => defense.violations.length > 0);
+  if (inConflict.length > 0) throw new Error(`${inConflict.length} in conflict: ${inConflict[0].violations[0].message}`);
+  firstDefense = defenses[0];
+  return `${defenses.length} defenses, 0 conflict`;
+});
+
+await check('A clash is refused with 409 and its reasons (F2)', 'api/src/defenses: the checker and the controller', async () => {
+  // Another student, in the same room at the same slot as the first defense, with its academic tutor as second teacher.
+  const students = await (await get(`${API}/students`, asAdmin())).json();
+  const other = students.find((student) => !student.placed);
+  const res = await get(`${API}/defenses`, asAdmin({
+    method: 'POST',
+    body: JSON.stringify({ studentId: other.id, secondTeacherId: firstDefense.academicTutor.id, slotId: firstDefense.slotId, roomId: firstDefense.roomId, force: true }),
+  }));
+  const body = await res.json();
+  const rules = (body.violations ?? []).map((violation) => violation.rule);
+  if (res.status !== 409 || !rules.includes('ROOM_TAKEN') || !rules.includes('TEACHER_BUSY')) {
+    throw new Error(`POST /defenses answered ${res.status}, rules: ${rules.join(', ') || 'none'}`);
+  }
+  return body.violations[0].message;
+});
+
 await check('The front answers on port 8080', '`docker compose logs web`', async () => {
   const res = await get(`${WEB}/`);
   const html = await res.text();
