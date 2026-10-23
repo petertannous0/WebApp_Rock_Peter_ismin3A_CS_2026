@@ -30,7 +30,7 @@ body {
 /* ─── The page ──────────────────────────────────────────────────────────── */
 
 .app {
-  max-width: 1080px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 32px 16px 64px;
 }
@@ -435,4 +435,78 @@ a {
   margin-top: 12px;
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+/* ─── Soutenances: panels, tiles, tables, messages ─────────────────────── */
+
+.panel {
+  max-width: 560px;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.panel h3 {
+  margin: 0;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 18px;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.tile:hover {
+  border-color: var(--accent);
+}
+
+.tile span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.success {
+  margin: 0;
+  padding: 10px 14px;
+  color: #05603a;
+  background: #ecfdf3;
+  border-radius: 8px;
 }
