@@ -30,6 +30,10 @@ export interface Teacher {
   lastName: string;
   email: string;
   hasAccount: boolean;
+  /** When they last saved their unavailability; absent: not answered. */
+  availabilitySubmittedAt?: string;
+  /** How many students they are the academic tutor of. */
+  tutoredCount: number;
 }
 
 export interface Student {
@@ -38,6 +42,11 @@ export interface Student {
   lastName: string;
   email: string;
   hasAccount: boolean;
+  company: { id: number; name: string };
+  companyTutor: { id: number; name: string; email: string };
+  academicTutor: { id: number; name: string };
+  /** True when their defense is placed. */
+  placed: boolean;
 }
 
 /** What POST /users expects. */
@@ -45,4 +54,103 @@ export interface NewAccount {
   role: AccountRole;
   personId: number;
   password: string;
+}
+
+// ─── F1: the session, the people, the availability ─────────────────────────
+
+export type HalfDay = 'MORNING' | 'AFTERNOON';
+
+export interface Room {
+  id: number;
+  name: string;
+  videoLink: string;
+  closedThursdayAfternoon: boolean;
+}
+
+export interface Slot {
+  id: number;
+  /** "YYYY-MM-DD" */
+  day: string;
+  dayIndex: number;
+  indexInDay: number;
+  /** Minutes since midnight: 510 = 8 h 30 */
+  startMinutes: number;
+  halfDay: HalfDay;
+}
+
+export interface Session {
+  id: number;
+  name: string;
+  startDate: string;
+  days: string[];
+  rooms: Room[];
+  slots: Slot[];
+  defenseCount: number;
+}
+
+export type RoomInput = Omit<Room, 'id'>;
+
+export interface NewSession {
+  name: string;
+  startDate: string;
+  rooms: RoomInput[];
+}
+
+export interface CompanyTutor {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  companyId: number;
+  companyName: string;
+}
+
+export interface Company {
+  id: number;
+  name: string;
+  studentCount: number;
+  tutors: CompanyTutor[];
+}
+
+export interface PersonInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface CompanyTutorInput extends PersonInput {
+  companyId: number;
+}
+
+export interface StudentInput extends PersonInput {
+  companyId: number;
+  companyTutorId: number;
+  academicTutorId: number;
+}
+
+export interface HalfDaySlot {
+  day: string;
+  halfDay: HalfDay;
+}
+
+export interface DefenseInUnavailableHalfDay extends HalfDaySlot {
+  startMinutes: number;
+  studentName: string;
+  roomName: string;
+}
+
+export interface MyAvailability {
+  submittedAt?: string;
+  unavailable: HalfDaySlot[];
+  defensesInUnavailableHalfDays: DefenseInUnavailableHalfDay[];
+}
+
+export interface TeacherAvailability {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  hasAccount: boolean;
+  submittedAt?: string;
+  unavailable: HalfDaySlot[];
 }

@@ -1,4 +1,21 @@
-import type { Account, NewAccount, Student, Teacher } from './types';
+import type {
+  Account,
+  Company,
+  CompanyTutor,
+  CompanyTutorInput,
+  HalfDaySlot,
+  MyAvailability,
+  NewAccount,
+  NewSession,
+  PersonInput,
+  Room,
+  RoomInput,
+  Session,
+  Student,
+  StudentInput,
+  Teacher,
+  TeacherAvailability,
+} from './types';
 
 /** Where the API runs, read from `.env` at build time. The fallback is the port of `npm run start:dev`. */
 export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
@@ -84,4 +101,76 @@ export function fetchTeachers(token: string): Promise<Teacher[]> {
 /** GET /students, ADMIN only. */
 export function fetchStudents(token: string): Promise<Student[]> {
   return getJson('/students', token);
+}
+
+/** POST, PATCH or PUT a JSON body with the token, and the JSON answer. */
+async function send<T>(method: 'POST' | 'PATCH' | 'PUT', path: string, body: unknown, token: string): Promise<T> {
+  const res = await fetch(`${API_URL}${path}`, { method, headers: authHeaders(token), body: JSON.stringify(body) });
+  await throwIfNotOk(res);
+  return (await res.json()) as T;
+}
+
+// ─── F1: the session ───────────────────────────────────────────────────────
+
+/** GET /session, any role. No session yet: an ApiError whose status is 404. */
+export function fetchSession(token: string): Promise<Session> {
+  return getJson('/session', token);
+}
+
+/** POST /session, ADMIN. 409 a session exists, 422 not a Monday. */
+export function createSession(session: NewSession, token: string): Promise<Session> {
+  return send('POST', '/session', session, token);
+}
+
+/** PATCH /session, ADMIN. 409 when the start date changes after a defense is placed. */
+export function updateSession(patch: { name?: string; startDate?: string }, token: string): Promise<Session> {
+  return send('PATCH', '/session', patch, token);
+}
+
+/** PATCH /session/rooms/:id, ADMIN. */
+export function updateRoom(id: number, patch: Partial<RoomInput>, token: string): Promise<Room> {
+  return send('PATCH', `/session/rooms/${id}`, patch, token);
+}
+
+// ─── F1: the people ────────────────────────────────────────────────────────
+
+export function fetchCompanies(token: string): Promise<Company[]> {
+  return getJson('/companies', token);
+}
+
+/** 409 name already used. */
+export function saveCompany(name: string, token: string, id?: number): Promise<Company> {
+  return id ? send('PATCH', `/companies/${id}`, { name }, token) : send('POST', '/companies', { name }, token);
+}
+
+/** 409 email already used, 422 unknown company or tutor who still follows students. */
+export function saveCompanyTutor(tutor: CompanyTutorInput, token: string, id?: number): Promise<CompanyTutor> {
+  return id ? send('PATCH', `/company-tutors/${id}`, tutor, token) : send('POST', '/company-tutors', tutor, token);
+}
+
+/** 409 email already used. */
+export function saveTeacher(teacher: PersonInput, token: string, id?: number): Promise<Teacher> {
+  return id ? send('PATCH', `/teachers/${id}`, teacher, token) : send('POST', '/teachers', teacher, token);
+}
+
+/** 409 email already used, 422 unknown company/tutor/teacher or tutor of another company. */
+export function saveStudent(student: StudentInput, token: string, id?: number): Promise<Student> {
+  return id ? send('PATCH', `/students/${id}`, student, token) : send('POST', '/students', student, token);
+}
+
+// ─── F1: the availability ──────────────────────────────────────────────────
+
+/** GET /me/unavailability, ENSEIGNANT. */
+export function fetchMyAvailability(token: string): Promise<MyAvailability> {
+  return getJson('/me/unavailability', token);
+}
+
+/** PUT /me/unavailability, ENSEIGNANT: replaces the whole list. 422 a day outside the session. */
+export function saveMyAvailability(halfDays: HalfDaySlot[], token: string): Promise<MyAvailability> {
+  return send('PUT', '/me/unavailability', { halfDays }, token);
+}
+
+/** GET /availability, ADMIN: every teacher, answered or not. */
+export function fetchAvailabilityOverview(token: string): Promise<TeacherAvailability[]> {
+  return getJson('/availability', token);
 }
