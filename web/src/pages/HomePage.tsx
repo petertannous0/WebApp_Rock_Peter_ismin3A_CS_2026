@@ -1,9 +1,9 @@
-/** The home page, at /. Replaced by a redirection by role once the login exists. */
+import { Navigate } from 'react-router';
+import { useAuth } from '../auth/AuthProvider';
+import { HOME_BY_ROLE } from '../auth/roles';
+
+/** At /: nothing to show of its own. To the home page of the role, or to the login. */
 export const HomePage = () => {
-  return (
-    <section className="page">
-      <h2>Bienvenue</h2>
-      <p>Planification des soutenances de stage de 3A.</p>
-    </section>
-  );
+  const { user } = useAuth();
+  return <Navigate to={user ? HOME_BY_ROLE[user.role] : '/login'} replace />;
 };

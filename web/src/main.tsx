@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import App from './App';
+import { AuthProvider } from './auth/AuthProvider';
 import './styles.css';
 
 /** One client for the whole app: it holds the cache of every query. A failed request is retried once. */
@@ -15,12 +16,15 @@ const queryClient = new QueryClient({
  *
  *   BrowserRouter         the current URL
  *   QueryClientProvider   the cache of the requests
+ *   AuthProvider          the logged-in user
  */
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>
   </StrictMode>,
