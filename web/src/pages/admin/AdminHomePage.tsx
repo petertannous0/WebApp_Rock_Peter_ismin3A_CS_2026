@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 
 const TILES = [
   { to: '/admin/placement', title: 'Placement', text: 'Placer, déplacer les soutenances : chaque règle est vérifiée avant l’enregistrement' },
+  { to: '/admin/tuteurs', title: 'Tuteurs entreprise', text: 'Les soutenances de chaque tuteur, en texte prêt à copier dans un e-mail' },
   { to: '/admin/session', title: 'Session', text: 'La semaine, les salles, leurs liens de visio, la fermeture du jeudi après-midi' },
   { to: '/admin/entreprises', title: 'Entreprises et tuteurs', text: 'Les entreprises et leurs tuteurs, sans compte' },
   { to: '/admin/enseignants', title: 'Enseignants', text: 'Les membres des jurys' },
