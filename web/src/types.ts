@@ -154,3 +154,50 @@ export interface TeacherAvailability {
   submittedAt?: string;
   unavailable: HalfDaySlot[];
 }
+
+// ─── F2: placement ─────────────────────────────────────────────────────────
+
+export type Severity = 'BLOCKING' | 'WARNING';
+
+/** A broken rule, the way the API sends it: the French sentence is ready. */
+export interface Violation {
+  rule: string;
+  severity: Severity;
+  message: string;
+}
+
+export interface CheckResult {
+  violations: Violation[];
+  /** No blocking violation. */
+  canSave: boolean;
+  /** Only warnings: "save anyway" with force. */
+  needsForce: boolean;
+  /** Informational: the company tutor already comes on another day. */
+  hint?: string;
+}
+
+export interface Proposal {
+  studentId: number;
+  secondTeacherId: number;
+  slotId: number;
+  roomId: number;
+  /** When moving: the defense being moved. */
+  defenseId?: number;
+}
+
+export interface Defense {
+  id: number;
+  slotId: number;
+  roomId: number;
+  day: string;
+  startMinutes: number;
+  halfDay: HalfDay;
+  roomName: string;
+  videoLink: string;
+  student: { id: number; name: string; companyName: string };
+  academicTutor: { id: number; name: string };
+  secondTeacher: { id: number; name: string };
+  companyTutor: { id: number; name: string; email: string };
+  /** Its conflicts now: a teacher may have become unavailable since it was placed. */
+  violations: Violation[];
+}

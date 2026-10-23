@@ -1,13 +1,16 @@
 import type {
   Account,
+  CheckResult,
   Company,
   CompanyTutor,
   CompanyTutorInput,
+  Defense,
   HalfDaySlot,
   MyAvailability,
   NewAccount,
   NewSession,
   PersonInput,
+  Proposal,
   Room,
   RoomInput,
   Session,
@@ -28,12 +31,15 @@ export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 export class ApiError extends Error {
   readonly status: number;
   readonly details: string[];
+  /** The whole body of the answer: a refused placement (409) carries its violations there. */
+  readonly body: unknown;
 
-  constructor(status: number, message: string, details: string[] = []) {
+  constructor(status: number, message: string, details: string[] = [], body?: unknown) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.details = details;
+    this.body = body;
   }
 }
 
@@ -49,7 +55,7 @@ export async function throwIfNotOk(res: Response): Promise<void> {
   const body: unknown = await res.json().catch(() => undefined);
   const message = body && typeof body === 'object' && 'message' in body ? body.message : undefined;
   const details = Array.isArray(message) ? message.map(String) : typeof message === 'string' ? [message] : [];
-  throw new ApiError(res.status, `L'API a répondu ${res.status}`, details);
+  throw new ApiError(res.status, `L'API a répondu ${res.status}`, details, body);
 }
 
 /** The headers of an authenticated JSON request. */
@@ -173,4 +179,43 @@ export function saveMyAvailability(halfDays: HalfDaySlot[], token: string): Prom
 /** GET /availability, ADMIN: every teacher, answered or not. */
 export function fetchAvailabilityOverview(token: string): Promise<TeacherAvailability[]> {
   return getJson('/availability', token);
+}
+
+// ─── F2: placement ─────────────────────────────────────────────────────────
+
+/** GET /defenses, ADMIN: every placed defense, with its current conflicts. */
+export function fetchDefenses(token: string): Promise<Defense[]> {
+  return getJson('/defenses', token);
+}
+
+/** POST /defenses/check, ADMIN: the dry run, nothing saved. */
+export function checkDefense(proposal: Proposal, token: string): Promise<CheckResult> {
+  return send('POST', '/defenses/check', proposal, token);
+}
+
+/** POST /defenses, ADMIN. Refused: 409, the violations in `ApiError.body` (see `refusalOf`). */
+export function createDefense(proposal: Omit<Proposal, 'defenseId'> & { force: boolean }, token: string): Promise<Defense> {
+  return send('POST', '/defenses', proposal, token);
+}
+
+/** PATCH /defenses/:id, ADMIN: a move. Same refusals as the creation. */
+export function moveDefense(
+  id: number,
+  patch: { slotId: number; roomId: number; secondTeacherId: number; force: boolean },
+  token: string,
+): Promise<Defense> {
+  return send('PATCH', `/defenses/${id}`, patch, token);
+}
+
+/** DELETE /defenses/:id, ADMIN. */
+export async function deleteDefense(id: number, token: string): Promise<void> {
+  const res = await fetch(`${API_URL}/defenses/${id}`, { method: 'DELETE', headers: authHeaders(token) });
+  await throwIfNotOk(res);
+}
+
+/** The violations of a refused placement (409), or null for any other error. */
+export function refusalOf(error: unknown): CheckResult | null {
+  if (!(error instanceof ApiError) || error.status !== 409) return null;
+  const body = error.body as Partial<CheckResult> | undefined;
+  return Array.isArray(body?.violations) ? (body as CheckResult) : null;
 }
