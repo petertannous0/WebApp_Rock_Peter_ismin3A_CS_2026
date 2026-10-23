@@ -12,14 +12,25 @@ export function prismaMock() {
     findFirst: vi.fn(),
     findMany: vi.fn(),
     create: vi.fn(),
+    createMany: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
+    deleteMany: vi.fn(),
     count: vi.fn(),
   });
   return {
     user: model(),
     teacher: model(),
     student: model(),
+    company: model(),
+    companyTutor: model(),
+    session: model(),
+    room: model(),
+    slot: model(),
+    teacherUnavailability: model(),
+    defense: model(),
+    /** The array form: the operations were built by the service; the fake only awaits them. */
+    $transaction: vi.fn(async (operations: unknown[]) => Promise.all(operations)),
   };
 }
 
