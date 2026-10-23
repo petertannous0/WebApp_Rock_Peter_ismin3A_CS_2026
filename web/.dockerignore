@@ -1,0 +1,4 @@
+# Never in the image: secrets, and what the image builds by itself.
+.env
+node_modules
+dist

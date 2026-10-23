@@ -1,0 +1,10 @@
+# Never in the image: secrets, the local database, and what the image builds by itself
+# (node_modules compiled for the host OS, dist/, the generated Prisma client).
+.env
+*.db
+*.db-journal
+node_modules
+dist
+src/generated
+.vscode
+*.tsbuildinfo
