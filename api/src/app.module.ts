@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
+import { AuthModule } from './auth/auth.module.js';
 import { HealthController } from './health/health.controller.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { StudentsModule } from './students/students.module.js';
+import { TeachersModule } from './teachers/teachers.module.js';
+import { UsersModule } from './users/users.module.js';
 
 /**
  * GET /health answers 200 as soon as the application runs: compose uses it
  * to know when the API is up.
  */
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuthModule, UsersModule, TeachersModule, StudentsModule],
   controllers: [HealthController],
 })
 export class AppModule {}
