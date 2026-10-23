@@ -6,6 +6,7 @@ import { AccountsPage } from './pages/admin/AccountsPage';
 import { AdminHomePage } from './pages/admin/AdminHomePage';
 import { AvailabilityPage } from './pages/admin/AvailabilityPage';
 import { CompaniesPage } from './pages/admin/CompaniesPage';
+import { PlacementPage } from './pages/admin/PlacementPage';
 import { SessionPage } from './pages/admin/SessionPage';
 import { StudentsPage } from './pages/admin/StudentsPage';
 import { TeachersPage } from './pages/admin/TeachersPage';
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/admin" element={admin(<AdminHomePage />)} />
+        <Route path="/admin/placement" element={admin(<PlacementPage />)} />
         <Route path="/admin/session" element={admin(<SessionPage />)} />
         <Route path="/admin/entreprises" element={admin(<CompaniesPage />)} />
         <Route path="/admin/enseignants" element={admin(<TeachersPage />)} />

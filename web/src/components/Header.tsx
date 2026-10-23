@@ -7,6 +7,7 @@ import { ROLE_LABELS, type Role } from '../types';
 const LINKS: Record<Role, { to: string; label: string }[]> = {
   ADMIN: [
     { to: '/admin', label: 'Tableau de bord' },
+    { to: '/admin/placement', label: 'Placement' },
     { to: '/admin/session', label: 'Session' },
     { to: '/admin/entreprises', label: 'Entreprises' },
     { to: '/admin/enseignants', label: 'Enseignants' },
