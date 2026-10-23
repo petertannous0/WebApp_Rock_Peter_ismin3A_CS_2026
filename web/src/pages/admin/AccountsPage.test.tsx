@@ -8,9 +8,19 @@ import { fakeApi, makeToken, nestError, pathOf, renderApp } from '../../test-uti
 const token = makeToken({ role: 'ADMIN' });
 
 const admin: Account = { id: 1, email: 'admin@castelmont.fr', role: 'ADMIN' };
-const durand: Teacher = { id: 7, firstName: 'Paul', lastName: 'Durand', email: 'paul.durand@castelmont.fr', hasAccount: false };
-const roux: Teacher = { id: 8, firstName: 'Anna', lastName: 'Roux', email: 'anna.roux@castelmont.fr', hasAccount: true };
-const lea: Student = { id: 12, firstName: 'Léa', lastName: 'Martin', email: 'lea.martin@etu.castelmont.fr', hasAccount: false };
+const durand: Teacher = { id: 7, firstName: 'Paul', lastName: 'Durand', email: 'paul.durand@castelmont.fr', hasAccount: false, tutoredCount: 3 };
+const roux: Teacher = { id: 8, firstName: 'Anna', lastName: 'Roux', email: 'anna.roux@castelmont.fr', hasAccount: true, tutoredCount: 2 };
+const lea: Student = {
+  id: 12,
+  firstName: 'Léa',
+  lastName: 'Martin',
+  email: 'lea.martin@etu.castelmont.fr',
+  hasAccount: false,
+  company: { id: 1, name: 'Provence Microsystèmes' },
+  companyTutor: { id: 5, name: 'Jean Roux', email: 'jean.roux@provence.fr' },
+  academicTutor: { id: 7, name: 'Paul Durand' },
+  placed: false,
+};
 
 function api(overrides: Record<string, () => Response | Promise<Response>> = {}) {
   return fakeApi({
