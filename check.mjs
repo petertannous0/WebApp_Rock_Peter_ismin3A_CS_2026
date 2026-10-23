@@ -75,6 +75,38 @@ await check('migrate exited with code 0', '`docker compose logs migrate`', async
   if (service.ExitCode !== 0) throw new Error(`migrate exited with code ${service.ExitCode}`);
 }, 30);
 
+/** The demo accounts of the seed (api/prisma/seed.ts), one per role. */
+const DEMO_PASSWORD = 'soutenance2027';
+const DEMO = [
+  ['ADMIN', 'admin@castelmont.fr'],
+  ['ENSEIGNANT', 'margaux.mercier@castelmont.fr'],
+  ['ELEVE', 'clara.muller@etu.castelmont.fr'],
+];
+const tokens = {};
+
+for (const [role, email] of DEMO) {
+  await check(`${role} logs in (${email})`, 'the seed creates the demo accounts: `docker compose logs migrate`', async () => {
+    const res = await get(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: DEMO_PASSWORD }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!body.access_token) throw new Error(`POST /auth/login answered ${res.status}, without a token`);
+    tokens[role] = body.access_token;
+  });
+}
+
+await check('Only the ADMIN reaches the admin routes', 'RolesGuard and @Roles on /users', async () => {
+  const statuses = [];
+  for (const [role] of DEMO) {
+    const res = await get(`${API}/users`, { headers: { Authorization: `Bearer ${tokens[role]}` } });
+    statuses.push(`${role} ${res.status}`);
+  }
+  if (statuses.join() !== 'ADMIN 200,ENSEIGNANT 403,ELEVE 403') throw new Error(statuses.join(', '));
+  return statuses.join(', ');
+});
+
 await check('The front answers on port 8080', '`docker compose logs web`', async () => {
   const res = await get(`${WEB}/`);
   const html = await res.text();
