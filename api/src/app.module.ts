@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module.js';
 import { AvailabilityModule } from './availability/availability.module.js';
 import { CompaniesModule } from './companies/companies.module.js';
+import { DefensesModule } from './defenses/defenses.module.js';
 import { HealthController } from './health/health.controller.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { SessionModule } from './session/session.module.js';
@@ -23,6 +24,7 @@ import { UsersModule } from './users/users.module.js';
     TeachersModule,
     StudentsModule,
     AvailabilityModule,
+    DefensesModule,
   ],
   controllers: [HealthController],
 })
