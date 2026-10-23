@@ -1,13 +1,30 @@
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
-import { renderApp } from './test-utils';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { fakeApi, makeToken, renderApp } from './test-utils';
 
-describe('App, the routes', () => {
-  it('shows the home page on /', () => {
+beforeEach(() => {
+  fakeApi({
+    'GET /users': () => Response.json([]),
+    'GET /teachers': () => Response.json([]),
+    'GET /students': () => Response.json([]),
+  });
+});
+
+describe('App, routing by role', () => {
+  it('sends a logged-out visitor from / to the login page', () => {
     renderApp('/');
 
-    expect(screen.getByRole('heading', { name: 'Bienvenue' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Connexion' })).toBeInTheDocument();
+  });
+
+  it.each([
+    ['ADMIN', 'Tableau de bord'],
+    ['ENSEIGNANT', 'Mon espace enseignant'],
+    ['ELEVE', 'Ma soutenance'],
+  ] as const)('sends %s from / to their own home page', (role, heading) => {
+    renderApp('/', { token: makeToken({ role }) });
+
+    expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument();
   });
 
   it('shows "Page introuvable" on a URL that no route knows', () => {
@@ -16,11 +33,10 @@ describe('App, the routes', () => {
     expect(screen.getByRole('heading', { name: 'Page introuvable' })).toBeInTheDocument();
   });
 
-  it('goes back home from the 404 page', async () => {
-    renderApp('/nimporte-quoi');
+  it('treats an expired token as logged out, and forgets it', () => {
+    renderApp('/admin', { token: makeToken({ role: 'ADMIN', expired: true }) });
 
-    await userEvent.click(screen.getByRole('link', { name: "Retour à l'accueil" }));
-
-    expect(screen.getByRole('heading', { name: 'Bienvenue' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Connexion' })).toBeInTheDocument();
+    expect(localStorage.getItem('token')).toBeNull();
   });
 });

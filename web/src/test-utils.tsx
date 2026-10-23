@@ -4,20 +4,28 @@ import type { ReactElement } from 'react';
 import { MemoryRouter } from 'react-router';
 import { vi } from 'vitest';
 import App from './App';
+import { AuthProvider, TOKEN_KEY } from './auth/AuthProvider';
+import type { Role } from './types';
 
 /**
  * The helpers of the tests. No browser, no API during the tests: the URL
  * lives in a MemoryRouter, and `fetch` is replaced by a fake API.
  */
 
-/** The whole app, as main.tsx mounts it, at `route`. A failed request is not retried. */
-export function renderApp(route = '/') {
+/**
+ * The whole app, as main.tsx mounts it, at `route`. With a token, the user
+ * is already logged in, as after a reload. A failed request is not retried.
+ */
+export function renderApp(route = '/', { token }: { token?: string } = {}) {
+  if (token) localStorage.setItem(TOKEN_KEY, token);
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   return render(
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={[route]}>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </MemoryRouter>
     </QueryClientProvider>,
   );
@@ -26,6 +34,27 @@ export function renderApp(route = '/') {
 /** One component alone, with a router around it for its <Link>. */
 export function renderWithRouter(ui: ReactElement) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
+}
+
+/** One email per role, for the tokens of the tests. */
+export const EMAILS: Record<Role, string> = {
+  ADMIN: 'admin@castelmont.fr',
+  ENSEIGNANT: 'paul.durand@castelmont.fr',
+  ELEVE: 'lea.martin@etu.castelmont.fr',
+};
+
+/**
+ * A token as the API makes them: a real header and payload in base64url,
+ * valid for an hour (or already expired). The signature is fake: the front
+ * never checks it, only the API can.
+ */
+export function makeToken({ role = 'ADMIN', email = EMAILS[role], expired = false }: { role?: Role; email?: string; expired?: boolean } = {}): string {
+  const encode = (value: object) =>
+    btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const now = Math.floor(Date.now() / 1000);
+  const header = encode({ alg: 'HS256', typ: 'JWT' });
+  const payload = encode({ sub: 1, email, role, iat: now - 7200, exp: expired ? now - 3600 : now + 3600 });
+  return `${header}.${payload}.fake-signature`;
 }
 
 /** What the fake API answers to one request. */
