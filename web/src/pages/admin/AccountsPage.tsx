@@ -3,7 +3,7 @@ import { useState, type SubmitEvent } from 'react';
 import { ApiError, createAccount, fetchAccounts, fetchStudents, fetchTeachers } from '../../api';
 import { useAuth } from '../../auth/AuthProvider';
 import { useLogoutOn401 } from '../../auth/useLogoutOn401';
-import { ROLE_LABELS, type Account, type AccountRole } from '../../types';
+import { ROLE_LABELS, type Account, type AccountRole, type Student, type Teacher } from '../../types';
 
 /** What the admin reads for each error of POST /users. The 400 adds what the API explained. */
 function describeError(error: unknown): string {
@@ -33,7 +33,7 @@ export const AccountsPage = () => {
   const accounts = useQuery({ queryKey: ['accounts'], queryFn: () => fetchAccounts(token!) });
   const people = useQuery({
     queryKey: [role === 'ENSEIGNANT' ? 'teachers' : 'students'],
-    queryFn: () => (role === 'ENSEIGNANT' ? fetchTeachers(token!) : fetchStudents(token!)),
+    queryFn: (): Promise<(Teacher | Student)[]> => (role === 'ENSEIGNANT' ? fetchTeachers(token!) : fetchStudents(token!)),
   });
 
   const mutation = useMutation({
