@@ -201,3 +201,41 @@ export interface Defense {
   /** Its conflicts now: a teacher may have become unavailable since it was placed. */
   violations: Violation[];
 }
+
+// ─── F3: schedules ─────────────────────────────────────────────────────────
+
+export interface Jury {
+  academicTutor: string;
+  secondTeacher: string;
+  companyTutor: string;
+}
+
+/** Where and when: what everybody needs to come. */
+export interface When {
+  day: string;
+  startMinutes: number;
+  halfDay: HalfDay;
+  roomName: string;
+  videoLink: string;
+}
+
+export interface TeacherDefense extends When {
+  id: number;
+  role: 'ACADEMIC_TUTOR' | 'SECOND_TEACHER';
+  student: { name: string; companyName: string };
+  jury: Jury;
+}
+
+export interface StudentSchedule {
+  studentName: string;
+  /** null while the defense is not placed. */
+  defense: (When & { jury: Jury }) | null;
+}
+
+export interface CompanyTutorSchedule {
+  id: number;
+  name: string;
+  email: string;
+  companyName: string;
+  defenses: (When & { studentName: string })[];
+}

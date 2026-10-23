@@ -39,3 +39,10 @@ export const HALF_DAY_LABELS: Record<HalfDay, string> = {
 export function formatHalfDay(day: string, halfDay: HalfDay): string {
   return `${formatDay(day)}, ${HALF_DAY_LABELS[halfDay]}`;
 }
+
+const DAY_WITH_YEAR = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+/** "2027-06-21" → "lundi 21 juin 2027", for a text read outside the app */
+export function formatDayWithYear(day: string): string {
+  return DAY_WITH_YEAR.format(new Date(`${day}T00:00:00Z`));
+}

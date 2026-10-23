@@ -4,6 +4,7 @@ import type {
   Company,
   CompanyTutor,
   CompanyTutorInput,
+  CompanyTutorSchedule,
   Defense,
   HalfDaySlot,
   MyAvailability,
@@ -16,8 +17,10 @@ import type {
   Session,
   Student,
   StudentInput,
+  StudentSchedule,
   Teacher,
   TeacherAvailability,
+  TeacherDefense,
 } from './types';
 
 /** Where the API runs, read from `.env` at build time. The fallback is the port of `npm run start:dev`. */
@@ -218,4 +221,21 @@ export function refusalOf(error: unknown): CheckResult | null {
   if (!(error instanceof ApiError) || error.status !== 409) return null;
   const body = error.body as Partial<CheckResult> | undefined;
   return Array.isArray(body?.violations) ? (body as CheckResult) : null;
+}
+
+// ─── F3: schedules ─────────────────────────────────────────────────────────
+
+/** GET /me/defenses, ENSEIGNANT: their defenses, in time order. */
+export function fetchMyDefenses(token: string): Promise<TeacherDefense[]> {
+  return getJson('/me/defenses', token);
+}
+
+/** GET /me/defense, ELEVE: their defense, or null while it is not placed. */
+export function fetchMyDefense(token: string): Promise<StudentSchedule> {
+  return getJson('/me/defense', token);
+}
+
+/** GET /company-tutors/schedule, ADMIN: each company tutor's defenses. */
+export function fetchCompanyTutorSchedules(token: string): Promise<CompanyTutorSchedule[]> {
+  return getJson('/company-tutors/schedule', token);
 }
