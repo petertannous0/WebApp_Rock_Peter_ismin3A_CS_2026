@@ -25,7 +25,7 @@ describe('Header', () => {
   it('shows the admin links to the admin only', () => {
     renderApp('/admin', { token: makeToken({ role: 'ADMIN' }) });
 
-    expect(navLinks()).toEqual(['Tableau de bord', 'Session', 'Entreprises', 'Enseignants', 'Élèves', 'Disponibilités', 'Comptes']);
+    expect(navLinks()).toEqual(['Tableau de bord', 'Placement', 'Session', 'Entreprises', 'Enseignants', 'Élèves', 'Disponibilités', 'Comptes']);
   });
 
   it('shows no admin link to a teacher', () => {
