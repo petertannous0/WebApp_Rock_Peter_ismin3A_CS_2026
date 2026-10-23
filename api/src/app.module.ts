@@ -5,6 +5,7 @@ import { CompaniesModule } from './companies/companies.module.js';
 import { DefensesModule } from './defenses/defenses.module.js';
 import { HealthController } from './health/health.controller.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { ScheduleModule } from './schedule/schedule.module.js';
 import { SessionModule } from './session/session.module.js';
 import { StudentsModule } from './students/students.module.js';
 import { TeachersModule } from './teachers/teachers.module.js';
@@ -25,6 +26,7 @@ import { UsersModule } from './users/users.module.js';
     StudentsModule,
     AvailabilityModule,
     DefensesModule,
+    ScheduleModule,
   ],
   controllers: [HealthController],
 })
