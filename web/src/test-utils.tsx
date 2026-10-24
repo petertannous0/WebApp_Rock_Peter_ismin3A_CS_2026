@@ -63,11 +63,13 @@ type Handler = (request: Request) => Response | Promise<Response>;
 /**
  * Replaces `fetch` by a fake API. `routes` maps a method and a path to an
  * answer: `{ 'GET /students': () => Response.json([...]) }`. The query string
- * counts when the route has one. Any other request: 404.
+ * counts when the route has one. `GET /health` is ok unless the routes say
+ * otherwise. Any other request: 404.
  *
  * Returns the list of the requests made, to check what the app sent.
  */
-export function fakeApi(routes: Record<string, Handler>): Request[] {
+export function fakeApi(fakes: Record<string, Handler>): Request[] {
+  const routes: Record<string, Handler> = { 'GET /health': () => Response.json({ status: 'ok' }), ...fakes };
   const requests: Request[] = [];
 
   const fakeFetch = async (input: RequestInfo | URL, init?: RequestInit) => {

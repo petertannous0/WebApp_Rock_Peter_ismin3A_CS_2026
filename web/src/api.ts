@@ -47,6 +47,31 @@ export class ApiError extends Error {
 }
 
 /**
+ * The API could not be reached at all: it is stopped, restarting, or the
+ * network is down. `fetch` itself failed, so there is no status.
+ */
+export class ApiDownError extends Error {
+  constructor() {
+    super('L’API ne répond pas');
+    this.name = 'ApiDownError';
+  }
+}
+
+/** Is this error the API being down: unreachable, or a gateway answering 502/503/504 in its place. */
+export function isApiDown(error: unknown): boolean {
+  return error instanceof ApiDownError || (error instanceof ApiError && [502, 503, 504].includes(error.status));
+}
+
+/** `fetch` on the API. A request that never reached it throws an ApiDownError instead of a TypeError. */
+async function call(path: string, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(`${API_URL}${path}`, init);
+  } catch {
+    throw new ApiDownError();
+  }
+}
+
+/**
  * Does nothing when the answer is ok, throws an ApiError otherwise.
  *
  * NestJS explains its errors in the body, `{ statusCode, message, error }`:
@@ -68,15 +93,20 @@ function authHeaders(token: string): HeadersInit {
 
 /** GET a JSON answer, with the token. */
 async function getJson<T>(path: string, token: string): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, { headers: authHeaders(token) });
+  const res = await call(path, { headers: authHeaders(token) });
   await throwIfNotOk(res);
   // A promise made to the compiler, not a check: the API is trusted to send this shape.
   return (await res.json()) as T;
 }
 
+/** GET /health, no token: ok as long as the API runs. Unreachable: an ApiDownError. */
+export async function checkHealth(): Promise<void> {
+  await throwIfNotOk(await call('/health'));
+}
+
 /** POST /auth/login, and the `access_token` of the answer. A wrong password: 401. */
 export async function login(email: string, password: string): Promise<string> {
-  const res = await fetch(`${API_URL}/auth/login`, {
+  const res = await call('/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -93,7 +123,7 @@ export function fetchAccounts(token: string): Promise<Account[]> {
 
 /** POST /users, ADMIN only. 404 unknown person, 409 already has an account. */
 export async function createAccount(account: NewAccount, token: string): Promise<Account> {
-  const res = await fetch(`${API_URL}/users`, {
+  const res = await call('/users', {
     method: 'POST',
     headers: authHeaders(token),
     body: JSON.stringify(account),
@@ -114,7 +144,7 @@ export function fetchStudents(token: string): Promise<Student[]> {
 
 /** POST, PATCH or PUT a JSON body with the token, and the JSON answer. */
 async function send<T>(method: 'POST' | 'PATCH' | 'PUT', path: string, body: unknown, token: string): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, { method, headers: authHeaders(token), body: JSON.stringify(body) });
+  const res = await call(path, { method, headers: authHeaders(token), body: JSON.stringify(body) });
   await throwIfNotOk(res);
   return (await res.json()) as T;
 }
@@ -212,7 +242,7 @@ export function moveDefense(
 
 /** DELETE /defenses/:id, ADMIN. */
 export async function deleteDefense(id: number, token: string): Promise<void> {
-  const res = await fetch(`${API_URL}/defenses/${id}`, { method: 'DELETE', headers: authHeaders(token) });
+  const res = await call(`/defenses/${id}`, { method: 'DELETE', headers: authHeaders(token) });
   await throwIfNotOk(res);
 }
 

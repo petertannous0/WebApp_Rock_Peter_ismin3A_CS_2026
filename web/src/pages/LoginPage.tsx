@@ -1,8 +1,9 @@
 import { useState, type SubmitEvent } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router';
-import { ApiError } from '../api';
+import { ApiError, isApiDown } from '../api';
 import { useAuth } from '../auth/AuthProvider';
 import { HOME_BY_ROLE } from '../auth/roles';
+import { SERVICE_DOWN_TEXT } from '../components/ServiceDown';
 
 /** What RequireRole leaves in the state of the navigation: the page that was asked for. */
 interface FromState {
@@ -35,7 +36,9 @@ export const LoginPage = () => {
       navigate(from ?? HOME_BY_ROLE[payload.role], { replace: true });
     } catch (err) {
       setError(
-        err instanceof ApiError && err.status === 401
+        isApiDown(err)
+          ? `😢 Service indisponible. ${SERVICE_DOWN_TEXT}`
+          : err instanceof ApiError && err.status === 401
           ? 'Adresse e-mail ou mot de passe incorrect.'
           : err instanceof ApiError && err.status === 400
             ? 'Saisissez une adresse e-mail valide et un mot de passe.'

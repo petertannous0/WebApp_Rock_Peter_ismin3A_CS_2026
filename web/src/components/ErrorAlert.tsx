@@ -1,4 +1,5 @@
-import { ApiError } from '../api';
+import { ApiError, isApiDown } from '../api';
+import { ServiceDownAlert } from './ServiceDown';
 
 interface ErrorAlertProps {
   error: unknown;
@@ -11,8 +12,11 @@ interface ErrorAlertProps {
 /**
  * The error of a request, in French. A 400 lists what the API explained, one
  * line per invalid field; an expected status gets the page's own sentence.
+ * The API down: the "service indisponible" message, whatever the page.
  */
 export const ErrorAlert = ({ error, messages = {}, fallback }: ErrorAlertProps) => {
+  if (isApiDown(error)) return <ServiceDownAlert />;
+
   const status = error instanceof ApiError ? error.status : undefined;
   const text =
     status === 400

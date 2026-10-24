@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { Route, Routes } from 'react-router';
 import { RequireRole } from './auth/RequireRole';
 import { Header } from './components/Header';
+import { ServiceDown } from './components/ServiceDown';
+import { useApiHealth } from './components/useApiHealth';
 import { AccountsPage } from './pages/admin/AccountsPage';
 import { AdminHomePage } from './pages/admin/AdminHomePage';
 import { AvailabilityPage } from './pages/admin/AvailabilityPage';
@@ -22,31 +24,38 @@ const admin = (page: ReactNode) => <RequireRole roles={['ADMIN']}>{page}</Requir
 /**
  * The frame of every page: the header, then the page of the current URL.
  * One area per role: /admin, /enseignant, /eleve, each guarded by RequireRole.
+ * While the API is down, ServiceDown takes the place of every page.
  */
 const App = () => {
+  const health = useApiHealth();
+
   return (
     <main className="app">
       <Header />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+      {health.down ? (
+        <ServiceDown onRetry={health.retry} retrying={health.retrying} />
+      ) : (
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
 
-        <Route path="/admin" element={admin(<AdminHomePage />)} />
-        <Route path="/admin/placement" element={admin(<PlacementPage />)} />
-        <Route path="/admin/tuteurs" element={admin(<CompanyTutorsPage />)} />
-        <Route path="/admin/session" element={admin(<SessionPage />)} />
-        <Route path="/admin/entreprises" element={admin(<CompaniesPage />)} />
-        <Route path="/admin/enseignants" element={admin(<TeachersPage />)} />
-        <Route path="/admin/eleves" element={admin(<StudentsPage />)} />
-        <Route path="/admin/disponibilites" element={admin(<AvailabilityPage />)} />
-        <Route path="/admin/comptes" element={admin(<AccountsPage />)} />
+          <Route path="/admin" element={admin(<AdminHomePage />)} />
+          <Route path="/admin/placement" element={admin(<PlacementPage />)} />
+          <Route path="/admin/tuteurs" element={admin(<CompanyTutorsPage />)} />
+          <Route path="/admin/session" element={admin(<SessionPage />)} />
+          <Route path="/admin/entreprises" element={admin(<CompaniesPage />)} />
+          <Route path="/admin/enseignants" element={admin(<TeachersPage />)} />
+          <Route path="/admin/eleves" element={admin(<StudentsPage />)} />
+          <Route path="/admin/disponibilites" element={admin(<AvailabilityPage />)} />
+          <Route path="/admin/comptes" element={admin(<AccountsPage />)} />
 
-        <Route path="/enseignant" element={<RequireRole roles={['ENSEIGNANT']}><TeacherHomePage /></RequireRole>} />
+          <Route path="/enseignant" element={<RequireRole roles={['ENSEIGNANT']}><TeacherHomePage /></RequireRole>} />
 
-        <Route path="/eleve" element={<RequireRole roles={['ELEVE']}><StudentHomePage /></RequireRole>} />
+          <Route path="/eleve" element={<RequireRole roles={['ELEVE']}><StudentHomePage /></RequireRole>} />
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      )}
     </main>
   );
 };

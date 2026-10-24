@@ -1,12 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type SubmitEvent } from 'react';
-import { ApiError, createAccount, fetchAccounts, fetchStudents, fetchTeachers } from '../../api';
+import { ApiError, createAccount, fetchAccounts, fetchStudents, fetchTeachers, isApiDown } from '../../api';
 import { useAuth } from '../../auth/AuthProvider';
 import { useLogoutOn401 } from '../../auth/useLogoutOn401';
+import { SERVICE_DOWN_TEXT, ServiceDownAlert } from '../../components/ServiceDown';
 import { ROLE_LABELS, type Account, type AccountRole, type Student, type Teacher } from '../../types';
 
 /** What the admin reads for each error of POST /users. The 400 adds what the API explained. */
 function describeError(error: unknown): string {
+  if (isApiDown(error)) return `😢 Service indisponible. ${SERVICE_DOWN_TEXT}`;
   if (error instanceof ApiError) {
     if (error.status === 400) return 'Le formulaire contient des erreurs :';
     if (error.status === 404) return 'Cette personne est introuvable.';
@@ -138,11 +140,14 @@ export const AccountsPage = () => {
           Chargement…
         </p>
       )}
-      {accounts.isError && (
-        <div className="error" role="alert">
-          <span>Impossible de charger les comptes : {accounts.error.message}</span>
-        </div>
-      )}
+      {accounts.isError &&
+        (isApiDown(accounts.error) ? (
+          <ServiceDownAlert />
+        ) : (
+          <div className="error" role="alert">
+            <span>Impossible de charger les comptes : {accounts.error.message}</span>
+          </div>
+        ))}
       {accounts.data && (
         <div className="table-scroll">
           <table className="table">

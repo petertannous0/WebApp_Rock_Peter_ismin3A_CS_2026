@@ -299,6 +299,31 @@ a {
   color: var(--muted);
 }
 
+/* ─── The API is down: <section class="service-down"> in place of the page ── */
+
+.service-down {
+  margin: 48px auto;
+  text-align: center;
+}
+
+.service-down-icon {
+  margin: 0;
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.service-down h2 {
+  margin-bottom: 8px;
+}
+
+.service-down p {
+  color: var(--muted);
+}
+
+.service-down .button {
+  margin-top: 8px;
+}
+
 /* ─── The page of a model: <article class="detail"> ─────────────────────── */
 
 .detail {

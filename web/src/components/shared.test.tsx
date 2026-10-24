@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { ApiError } from '../api';
+import { ApiDownError, ApiError } from '../api';
 import { ErrorAlert } from './ErrorAlert';
 import { ViolationList } from './ViolationList';
 
@@ -44,5 +44,14 @@ describe('ErrorAlert', () => {
     render(<ErrorAlert error={new ApiError(500, "L'API a répondu 500")} fallback="Impossible d’enregistrer" />);
 
     expect(screen.getByRole('alert')).toHaveTextContent("Impossible d’enregistrer : L'API a répondu 500");
+  });
+});
+
+describe('ErrorAlert, the API down', () => {
+  it('says the service is down instead of the error of the request', () => {
+    render(<ErrorAlert error={new ApiDownError()} fallback="Impossible de charger les élèves" />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Service indisponible.');
+    expect(screen.getByRole('alert')).not.toHaveTextContent('Impossible de charger');
   });
 });
