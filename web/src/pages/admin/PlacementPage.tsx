@@ -41,7 +41,7 @@ export const PlacementPage = () => {
 
   if (session.error instanceof ApiError && session.error.status === 404) {
     return (
-      <section className="page">
+      <section className="page wide-page">
         <h2>Placement des soutenances</h2>
         <p className="hint">Créez d’abord la session : sa semaine, ses salles et ses créneaux.</p>
       </section>
@@ -50,7 +50,7 @@ export const PlacementPage = () => {
   const error = session.error ?? defenses.error ?? students.error ?? teachers.error;
   if (error) {
     return (
-      <section className="page">
+      <section className="page wide-page">
         <h2>Placement des soutenances</h2>
         <ErrorAlert error={error} fallback="Impossible de charger le placement" />
       </section>
@@ -58,7 +58,7 @@ export const PlacementPage = () => {
   }
   if (!session.data || !defenses.data || !students.data || !teachers.data) {
     return (
-      <section className="page">
+      <section className="page wide-page">
         <h2>Placement des soutenances</h2>
         <p className="status" role="status">
           Chargement…
@@ -71,7 +71,7 @@ export const PlacementPage = () => {
   const inConflict = defenses.data.filter((defense) => defense.violations.length > 0);
 
   return (
-    <section className="page">
+    <section className="page wide-page">
       <h2>Placement des soutenances</h2>
       <p className="summary">
         <strong>{defenses.data.length}</strong> soutenance(s) placée(s), <strong>{unplaced.length}</strong> élève(s) à placer.
@@ -145,74 +145,76 @@ const DayGrid = ({ session, dayIndex, defenses, onSelect }: DayGridProps) => {
   const at = (slot: Slot, room: Room) => defenses.find((d) => d.slotId === slot.id && d.roomId === room.id);
 
   return (
-    <table className="table placement-grid" aria-label={`Grille du ${formatDay(session.days[dayIndex])}`}>
-      <thead>
-        <tr>
-          <th>Créneau</th>
-          {session.rooms.map((room) => (
-            <th key={room.id}>{room.name}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {slots.map((slot) => (
-          <Fragment key={slot.id}>
-            {slot.indexInDay === 6 && (
-              <tr className="lunch">
-                <td colSpan={session.rooms.length + 1}>Pause déjeuner, 12 h 30 – 13 h 30</td>
-              </tr>
-            )}
-            <tr>
-              <th scope="row">{formatTime(slot.startMinutes)}</th>
-              {session.rooms.map((room) => {
-                const defense = at(slot, room);
-                const where = `${formatShortDay(slot.day)} ${formatTime(slot.startMinutes)}, ${room.name}`;
-                if (defense) {
-                  const conflict = defense.violations.length > 0;
+    <div className="table-scroll">
+      <table className="table placement-grid" aria-label={`Grille du ${formatDay(session.days[dayIndex])}`}>
+        <thead>
+          <tr>
+            <th>Créneau</th>
+            {session.rooms.map((room) => (
+              <th key={room.id}>{room.name}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {slots.map((slot) => (
+            <Fragment key={slot.id}>
+              {slot.indexInDay === 6 && (
+                <tr className="lunch">
+                  <td colSpan={session.rooms.length + 1}>Pause déjeuner, 12 h 30 – 13 h 30</td>
+                </tr>
+              )}
+              <tr>
+                <th scope="row">{formatTime(slot.startMinutes)}</th>
+                {session.rooms.map((room) => {
+                  const defense = at(slot, room);
+                  const where = `${formatShortDay(slot.day)} ${formatTime(slot.startMinutes)}, ${room.name}`;
+                  if (defense) {
+                    const conflict = defense.violations.length > 0;
+                    return (
+                      <td key={room.id}>
+                        <button
+                          type="button"
+                          className={conflict ? 'defense-cell conflict' : 'defense-cell'}
+                          aria-label={`Soutenance de ${defense.student.name}, ${where}${conflict ? ', en conflit' : ''}`}
+                          onClick={() => onSelect({ mode: 'move', defense })}
+                        >
+                          <strong>
+                            {conflict && '⚠ '}
+                            {defense.student.name}
+                          </strong>
+                          <small>
+                            {defense.academicTutor.name} · {defense.secondTeacher.name}
+                          </small>
+                        </button>
+                      </td>
+                    );
+                  }
+                  if (isClosed(room, slot)) {
+                    return (
+                      <td key={room.id} className="closed-cell">
+                        Fermée
+                      </td>
+                    );
+                  }
                   return (
                     <td key={room.id}>
                       <button
                         type="button"
-                        className={conflict ? 'defense-cell conflict' : 'defense-cell'}
-                        aria-label={`Soutenance de ${defense.student.name}, ${where}${conflict ? ', en conflit' : ''}`}
-                        onClick={() => onSelect({ mode: 'move', defense })}
+                        className="empty-cell"
+                        aria-label={`Placer ${where}`}
+                        onClick={() => onSelect({ mode: 'place', slotId: slot.id, roomId: room.id })}
                       >
-                        <strong>
-                          {conflict && '⚠ '}
-                          {defense.student.name}
-                        </strong>
-                        <small>
-                          {defense.academicTutor.name} · {defense.secondTeacher.name}
-                        </small>
+                        +
                       </button>
                     </td>
                   );
-                }
-                if (isClosed(room, slot)) {
-                  return (
-                    <td key={room.id} className="closed-cell">
-                      Fermée
-                    </td>
-                  );
-                }
-                return (
-                  <td key={room.id}>
-                    <button
-                      type="button"
-                      className="empty-cell"
-                      aria-label={`Placer ${where}`}
-                      onClick={() => onSelect({ mode: 'place', slotId: slot.id, roomId: room.id })}
-                    >
-                      +
-                    </button>
-                  </td>
-                );
-              })}
-            </tr>
-          </Fragment>
-        ))}
-      </tbody>
-    </table>
+                })}
+              </tr>
+            </Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

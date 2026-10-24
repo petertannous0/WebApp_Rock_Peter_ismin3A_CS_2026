@@ -58,7 +58,7 @@ export const AccountsPage = () => {
   };
 
   return (
-    <section className="page">
+    <section className="page wide-page">
       <h2>Comptes</h2>
 
       <form className="form panel" onSubmit={handleSubmit} aria-label="Créer un compte">
@@ -144,24 +144,26 @@ export const AccountsPage = () => {
         </div>
       )}
       {accounts.data && (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Identifiant</th>
-              <th>Nom</th>
-              <th>Rôle</th>
-            </tr>
-          </thead>
-          <tbody>
-            {accounts.data.map((account) => (
-              <tr key={account.id}>
-                <td>{account.email}</td>
-                <td>{account.name ?? '—'}</td>
-                <td>{ROLE_LABELS[account.role]}</td>
+        <div className="table-scroll">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Identifiant</th>
+                <th>Nom</th>
+                <th>Rôle</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {accounts.data.map((account) => (
+                <tr key={account.id}>
+                  <td>{account.email}</td>
+                  <td>{account.name ?? '—'}</td>
+                  <td>{ROLE_LABELS[account.role]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

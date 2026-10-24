@@ -34,7 +34,7 @@ export const TeachersPage = () => {
   };
 
   return (
-    <section className="page">
+    <section className="page wide-page">
       <h2>Enseignants</h2>
 
       <form className="form panel" onSubmit={handleSubmit} aria-label="Enseignant">
@@ -73,41 +73,43 @@ export const TeachersPage = () => {
       )}
       {teachers.isError && <ErrorAlert error={teachers.error} fallback="Impossible de charger les enseignants" />}
       {teachers.data && (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>E-mail</th>
-              <th>Tuteur de</th>
-              <th>Compte</th>
-              <th>Disponibilités</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {teachers.data.map((teacher) => (
-              <tr key={teacher.id}>
-                <td>
-                  {teacher.lastName} {teacher.firstName}
-                </td>
-                <td>{teacher.email}</td>
-                <td>{teacher.tutoredCount} élève(s)</td>
-                <td>{teacher.hasAccount ? 'Oui' : 'Non'}</td>
-                <td>{teacher.availabilitySubmittedAt ? `Saisies le ${formatDate(teacher.availabilitySubmittedAt)}` : 'Non saisies'}</td>
-                <td>
-                  <button
-                    className="link-button"
-                    type="button"
-                    aria-label={`Modifier ${teacher.firstName} ${teacher.lastName}`}
-                    onClick={() => setEdit({ id: teacher.id, firstName: teacher.firstName, lastName: teacher.lastName, email: teacher.email })}
-                  >
-                    Modifier
-                  </button>
-                </td>
+        <div className="table-scroll">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>E-mail</th>
+                <th>Tuteur de</th>
+                <th>Compte</th>
+                <th>Disponibilités</th>
+                <th />
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {teachers.data.map((teacher) => (
+                <tr key={teacher.id}>
+                  <td>
+                    {teacher.lastName} {teacher.firstName}
+                  </td>
+                  <td>{teacher.email}</td>
+                  <td>{teacher.tutoredCount} élève(s)</td>
+                  <td>{teacher.hasAccount ? 'Oui' : 'Non'}</td>
+                  <td>{teacher.availabilitySubmittedAt ? `Saisies le ${formatDate(teacher.availabilitySubmittedAt)}` : 'Non saisies'}</td>
+                  <td>
+                    <button
+                      className="link-button"
+                      type="button"
+                      aria-label={`Modifier ${teacher.firstName} ${teacher.lastName}`}
+                      onClick={() => setEdit({ id: teacher.id, firstName: teacher.firstName, lastName: teacher.lastName, email: teacher.email })}
+                    >
+                      Modifier
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

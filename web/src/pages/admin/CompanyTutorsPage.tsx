@@ -24,7 +24,7 @@ export const CompanyTutorsPage = () => {
   );
 
   return (
-    <section className="page">
+    <section className="page wide-page">
       <h2>Tuteurs entreprise</h2>
       <p className="hint">Les tuteurs entreprise n’ont pas de compte : copiez le texte de chacun dans un e-mail.</p>
 

@@ -271,6 +271,11 @@ a {
   max-width: 720px;
 }
 
+/* A page of tables (the admin lists, the placement grid): the whole width of .app. */
+.page.wide-page {
+  max-width: none;
+}
+
 .back {
   display: inline-block;
   margin-bottom: 16px;
@@ -352,7 +357,8 @@ a {
 
 .form {
   display: grid;
-  grid-template-columns: 1fr;
+  /* minmax(0, …): a select with a long option shrinks to the column instead of spilling out of it. */
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 16px 24px;
   padding: 24px;
@@ -374,6 +380,7 @@ a {
 
 .field input,
 .field select {
+  max-width: 100%;
   padding: 9px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -503,6 +510,12 @@ a {
   font-weight: 600;
 }
 
+/* Around every <table>: a table wider than its box scrolls inside it, never over its neighbours. */
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .success {
   margin: 0;
   padding: 10px 14px;
@@ -606,12 +619,13 @@ a {
 
 .placement-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-columns: minmax(0, 1fr) 360px;
   gap: 24px;
   align-items: start;
 }
 
-@media (max-width: 960px) {
+/* Below this width the grid and the side panels no longer fit side by side: the panels go under the grid. */
+@media (max-width: 1100px) {
   .placement-layout {
     grid-template-columns: 1fr;
   }
@@ -628,16 +642,28 @@ a {
   margin-bottom: 0;
 }
 
+/* The form of the placement panel is already inside a panel: no second frame around it. */
+.placement-panel .form {
+  padding: 0;
+  border: none;
+}
+
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  margin-bottom: 12px;
 }
 
 .placement-grid td,
 .placement-grid th {
   padding: 4px 6px;
   vertical-align: top;
+}
+
+/* A room column stays readable: narrower than this, the grid scrolls. */
+.placement-grid td {
+  min-width: 140px;
 }
 
 .placement-grid .lunch td {
@@ -809,7 +835,7 @@ a {
 
 .tutor-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr));
   gap: 16px;
 }
 

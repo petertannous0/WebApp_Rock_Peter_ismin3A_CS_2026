@@ -72,7 +72,7 @@ export const StudentsPage = () => {
   };
 
   return (
-    <section className="page">
+    <section className="page wide-page">
       <h2>Élèves</h2>
 
       <form className="form panel" onSubmit={handleSubmit} aria-label="Élève">
@@ -161,45 +161,47 @@ export const StudentsPage = () => {
       )}
       {students.isError && <ErrorAlert error={students.error} fallback="Impossible de charger les élèves" />}
       {students.data && (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Élève</th>
-              <th>Entreprise</th>
-              <th>Tuteur entreprise</th>
-              <th>Tuteur académique</th>
-              <th>Compte</th>
-              <th>Soutenance</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {shown.map((student) => (
-              <tr key={student.id}>
-                <td>
-                  {student.lastName} {student.firstName}
-                  <br />
-                  <small>{student.email}</small>
-                </td>
-                <td>{student.company.name}</td>
-                <td>{student.companyTutor.name}</td>
-                <td>{student.academicTutor.name}</td>
-                <td>{student.hasAccount ? 'Oui' : 'Non'}</td>
-                <td>{student.placed ? 'Placée' : 'À placer'}</td>
-                <td>
-                  <button
-                    className="link-button"
-                    type="button"
-                    aria-label={`Modifier ${student.firstName} ${student.lastName}`}
-                    onClick={() => setDraft(toDraft(student))}
-                  >
-                    Modifier
-                  </button>
-                </td>
+        <div className="table-scroll">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Élève</th>
+                <th>Entreprise</th>
+                <th>Tuteur entreprise</th>
+                <th>Tuteur académique</th>
+                <th>Compte</th>
+                <th>Soutenance</th>
+                <th />
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {shown.map((student) => (
+                <tr key={student.id}>
+                  <td>
+                    {student.lastName} {student.firstName}
+                    <br />
+                    <small>{student.email}</small>
+                  </td>
+                  <td>{student.company.name}</td>
+                  <td>{student.companyTutor.name}</td>
+                  <td>{student.academicTutor.name}</td>
+                  <td>{student.hasAccount ? 'Oui' : 'Non'}</td>
+                  <td>{student.placed ? 'Placée' : 'À placer'}</td>
+                  <td>
+                    <button
+                      className="link-button"
+                      type="button"
+                      aria-label={`Modifier ${student.firstName} ${student.lastName}`}
+                      onClick={() => setDraft(toDraft(student))}
+                    >
+                      Modifier
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

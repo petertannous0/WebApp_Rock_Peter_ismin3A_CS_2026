@@ -72,35 +72,37 @@ const CreateSessionForm = () => {
         <input id="session-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} required />
       </div>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Salle</th>
-            <th>Lien de visioconférence</th>
-            <th>Fermée jeudi après-midi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rooms.map((room, i) => (
-            <tr key={i}>
-              <td>
-                <input aria-label={`Nom de la salle ${i + 1}`} value={room.name} onChange={(event) => setRoom(i, { name: event.target.value })} required />
-              </td>
-              <td>
-                <input aria-label={`Lien de la salle ${i + 1}`} type="url" value={room.videoLink} onChange={(event) => setRoom(i, { videoLink: event.target.value })} required />
-              </td>
-              <td>
-                <input
-                  aria-label={`Salle ${i + 1} fermée jeudi après-midi`}
-                  type="checkbox"
-                  checked={room.closedThursdayAfternoon}
-                  onChange={(event) => setRoom(i, { closedThursdayAfternoon: event.target.checked })}
-                />
-              </td>
+      <div className="table-scroll">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Salle</th>
+              <th>Lien de visioconférence</th>
+              <th>Fermée jeudi après-midi</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rooms.map((room, i) => (
+              <tr key={i}>
+                <td>
+                  <input aria-label={`Nom de la salle ${i + 1}`} value={room.name} onChange={(event) => setRoom(i, { name: event.target.value })} required />
+                </td>
+                <td>
+                  <input aria-label={`Lien de la salle ${i + 1}`} type="url" value={room.videoLink} onChange={(event) => setRoom(i, { videoLink: event.target.value })} required />
+                </td>
+                <td>
+                  <input
+                    aria-label={`Salle ${i + 1} fermée jeudi après-midi`}
+                    type="checkbox"
+                    checked={room.closedThursdayAfternoon}
+                    onChange={(event) => setRoom(i, { closedThursdayAfternoon: event.target.checked })}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {mutation.isError && (
         <ErrorAlert
@@ -153,21 +155,23 @@ const SessionDetails = ({ session }: { session: Session }) => {
       </dl>
 
       <h3>Salles</h3>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Salle</th>
-            <th>Lien de visioconférence</th>
-            <th>Fermée jeudi après-midi</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {session.rooms.map((room) => (
-            <RoomRow key={room.id} room={room} />
-          ))}
-        </tbody>
-      </table>
+      <div className="table-scroll">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Salle</th>
+              <th>Lien de visioconférence</th>
+              <th>Fermée jeudi après-midi</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {session.rooms.map((room) => (
+              <RoomRow key={room.id} room={room} />
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <form
         className="form panel"

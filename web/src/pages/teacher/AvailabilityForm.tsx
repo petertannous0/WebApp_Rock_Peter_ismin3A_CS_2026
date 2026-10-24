@@ -83,39 +83,41 @@ export const AvailabilityForm = () => {
         {answer.submittedAt ? `Réponse enregistrée le ${formatDate(answer.submittedAt)}.` : 'Vous n’avez pas encore répondu.'}
       </p>
 
-      <table className="table availability-grid">
-        <thead>
-          <tr>
-            <th>Jour</th>
-            {HALF_DAYS.map((halfDay) => (
-              <th key={halfDay}>{HALF_DAY_LABELS[halfDay]}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {session.data.days.map((day) => (
-            <tr key={day}>
-              <th scope="row">{formatDay(day)}</th>
-              {HALF_DAYS.map((halfDay) => {
-                const k = key(day, halfDay);
-                return (
-                  <td key={halfDay} className={checked.has(k) ? 'cell-unavailable' : undefined}>
-                    <label className="checkbox">
-                      <input
-                        type="checkbox"
-                        aria-label={`Indisponible ${formatDay(day)} ${HALF_DAY_LABELS[halfDay]}`}
-                        checked={checked.has(k)}
-                        onChange={() => toggle(k)}
-                      />
-                      Indisponible
-                    </label>
-                  </td>
-                );
-              })}
+      <div className="table-scroll">
+        <table className="table availability-grid">
+          <thead>
+            <tr>
+              <th>Jour</th>
+              {HALF_DAYS.map((halfDay) => (
+                <th key={halfDay}>{HALF_DAY_LABELS[halfDay]}</th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {session.data.days.map((day) => (
+              <tr key={day}>
+                <th scope="row">{formatDay(day)}</th>
+                {HALF_DAYS.map((halfDay) => {
+                  const k = key(day, halfDay);
+                  return (
+                    <td key={halfDay} className={checked.has(k) ? 'cell-unavailable' : undefined}>
+                      <label className="checkbox">
+                        <input
+                          type="checkbox"
+                          aria-label={`Indisponible ${formatDay(day)} ${HALF_DAY_LABELS[halfDay]}`}
+                          checked={checked.has(k)}
+                          onChange={() => toggle(k)}
+                        />
+                        Indisponible
+                      </label>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {answer.defensesInUnavailableHalfDays.length > 0 && (
         <div className="warning" role="alert">

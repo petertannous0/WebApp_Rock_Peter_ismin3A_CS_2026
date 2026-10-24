@@ -58,7 +58,7 @@ export const CompaniesPage = () => {
   };
 
   return (
-    <section className="page">
+    <section className="page wide-page">
       <h2>Entreprises et tuteurs</h2>
 
       <div className="forms">
@@ -149,43 +149,45 @@ interface CompanyTableProps {
 }
 
 const CompanyTable = ({ companies, onEditCompany, onEditTutor }: CompanyTableProps) => (
-  <table className="table">
-    <thead>
-      <tr>
-        <th>Entreprise</th>
-        <th>Élèves</th>
-        <th>Tuteurs</th>
-      </tr>
-    </thead>
-    <tbody>
-      {companies.map((company) => (
-        <tr key={company.id}>
-          <td>
-            {company.name}{' '}
-            <button className="link-button" type="button" onClick={() => onEditCompany(company)} aria-label={`Renommer ${company.name}`}>
-              Renommer
-            </button>
-          </td>
-          <td>{company.studentCount}</td>
-          <td>
-            <ul className="plain-list">
-              {company.tutors.map((tutor) => (
-                <li key={tutor.id}>
-                  {tutor.firstName} {tutor.lastName} · {tutor.email}{' '}
-                  <button
-                    className="link-button"
-                    type="button"
-                    onClick={() => onEditTutor(tutor)}
-                    aria-label={`Modifier ${tutor.firstName} ${tutor.lastName}`}
-                  >
-                    Modifier
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </td>
+  <div className="table-scroll">
+    <table className="table">
+      <thead>
+        <tr>
+          <th>Entreprise</th>
+          <th>Élèves</th>
+          <th>Tuteurs</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {companies.map((company) => (
+          <tr key={company.id}>
+            <td>
+              {company.name}{' '}
+              <button className="link-button" type="button" onClick={() => onEditCompany(company)} aria-label={`Renommer ${company.name}`}>
+                Renommer
+              </button>
+            </td>
+            <td>{company.studentCount}</td>
+            <td>
+              <ul className="plain-list">
+                {company.tutors.map((tutor) => (
+                  <li key={tutor.id}>
+                    {tutor.firstName} {tutor.lastName} · {tutor.email}{' '}
+                    <button
+                      className="link-button"
+                      type="button"
+                      onClick={() => onEditTutor(tutor)}
+                      aria-label={`Modifier ${tutor.firstName} ${tutor.lastName}`}
+                    >
+                      Modifier
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 );
