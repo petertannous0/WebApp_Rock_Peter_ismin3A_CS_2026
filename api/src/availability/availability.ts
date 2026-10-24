@@ -7,7 +7,7 @@ export interface HalfDaySlot {
 
 /**
  * A defense of the teacher that falls in a half-day they now say they are
- * unavailable: they are warned, the save is not refused (decision P4-c).
+ * unavailable: they are warned, the save is not refused.
  */
 export interface DefenseInUnavailableHalfDay extends HalfDaySlot {
   startMinutes: number;

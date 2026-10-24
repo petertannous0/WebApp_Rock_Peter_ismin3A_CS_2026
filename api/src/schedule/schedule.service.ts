@@ -36,8 +36,8 @@ function jury(row: DefenseRow): Jury {
 }
 
 /**
- * F3: each person sees their own schedule, as soon as a defense is placed
- * (decision P6-d). Read only. No conflicts here: those are the admin's business.
+ * F3: each person sees their own schedule, as soon as a defense is placed.
+ * Read only. No conflicts here: those are the admin's business.
  */
 @Injectable()
 export class ScheduleService {
@@ -61,7 +61,7 @@ export class ScheduleService {
     }));
   }
 
-  /** The logged-in student's defense: slot, room, jury. Names only, no emails (decision P6-b). */
+  /** The logged-in student's defense: slot, room, jury. Names only, no emails. */
   async forStudent(userId: number): Promise<StudentSchedule> {
     const student = await this.prisma.student.findUnique({ where: { userId } });
     if (!student) throw new NoProfile(userId);

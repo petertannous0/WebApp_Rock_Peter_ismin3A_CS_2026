@@ -26,7 +26,7 @@ function toViolationView(violation: Violation): ViolationView {
  * function: this service only loads the state, calls it, and saves.
  *
  * Every save checks every rule first. A blocking violation refuses it; warnings
- * only refuse it without `force` (decision P5-a). The unique constraints of
+ * only refuse it without `force`. The unique constraints of
  * the table (one defense per student, per room and slot) stay the last guard
  * against two saves at the same instant.
  */

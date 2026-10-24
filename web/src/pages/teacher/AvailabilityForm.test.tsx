@@ -65,7 +65,7 @@ describe('AvailabilityForm (the teacher)', () => {
     await expect(put.json()).resolves.toEqual({ halfDays: [] });
   });
 
-  it('warns about a defense already placed in a half-day they tick (decision P4-c)', async () => {
+  it('warns about a defense already placed in a half-day they tick', async () => {
     api(notAnswered, {
       submittedAt: '2027-05-12T09:00:00.000Z',
       unavailable: [{ day: '2027-06-21', halfDay: 'MORNING' }],

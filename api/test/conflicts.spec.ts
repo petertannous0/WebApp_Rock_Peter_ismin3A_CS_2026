@@ -394,7 +394,7 @@ describe('checkPlacement', () => {
   });
 });
 
-describe('severity (decision P5-a, option B)', () => {
+describe('severity', () => {
   it('lets only rules 2 and 5 be forced', () => {
     const warnings = Object.entries(SEVERITY)
       .filter(([, severity]) => severity === 'WARNING')

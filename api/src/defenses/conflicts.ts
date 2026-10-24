@@ -92,7 +92,7 @@ export type Rule = Violation['rule'];
 export type Severity = 'BLOCKING' | 'WARNING';
 
 /**
- * Decision P5-a (option B): what blocks the save, and what only warns with
+ * What blocks the save, and what only warns with
  * "save anyway". Two rules warn: the admin may have agreed otherwise with the
  * teacher on the phone. Everything else is a physical or a client's hard rule.
  */

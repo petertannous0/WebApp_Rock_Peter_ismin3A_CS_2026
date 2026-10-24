@@ -3,7 +3,7 @@
  * when, where. Pure, like the checker: tested on its own.
  *
  * No civility ("M.", "Mme"): the data has none, and guessing it from a first
- * name would be wrong too often. Full names instead (decision P5-d).
+ * name would be wrong too often. Full names instead.
  */
 import type { HalfDay } from '../session/slots.js';
 import type { OtherDefense, Violation } from './conflicts.js';
