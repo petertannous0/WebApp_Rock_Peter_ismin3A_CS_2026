@@ -1,13 +1,3 @@
-/**
- * Checks the whole stack the way the grader will: starts it with docker
- * compose, then asks the API and the front what a user would see.
- * Adapted from the class example (tp10/check.mjs).
- *
- *   npm run check            the stack stays up afterwards
- *   npm run check -- --down  the stack is stopped afterwards
- *
- * No dependency: Node 26 and its fetch.
- */
 import { spawnSync } from 'node:child_process';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
