@@ -15,7 +15,6 @@ const include = {
 
 type DefenseRow = Prisma.DefenseGetPayload<{ include: typeof include }>;
 
-/** In time order: the day, then the slot of the day. */
 const chronological = [{ slot: { dayIndex: 'asc' } }, { slot: { indexInDay: 'asc' } }] as const;
 
 function when(row: DefenseRow): When {
@@ -44,7 +43,6 @@ function jury(row: DefenseRow): Jury {
 export class ScheduleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** The defenses where the logged-in teacher sits, either role, day by day. */
   async forTeacher(userId: number): Promise<TeacherDefense[]> {
     const teacher = await this.prisma.teacher.findUnique({ where: { userId } });
     if (!teacher) throw new NoProfile(userId);
@@ -72,7 +70,6 @@ export class ScheduleService {
     return { studentName: fullName(student), defense: row ? { ...when(row), jury: jury(row) } : null };
   }
 
-  /** Every company tutor, with their defenses: the admin copies them into an email. */
   async forCompanyTutors(): Promise<CompanyTutorSchedule[]> {
     const [tutors, rows] = await Promise.all([
       this.prisma.companyTutor.findMany({ include: { company: true }, orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] }),

@@ -20,11 +20,6 @@ function mapErrors(error: unknown): never {
   return toHttp(error);
 }
 
-/**
- *   GET /me/unavailability   the logged-in teacher's half-days, and their defenses that fall in them
- *   PUT /me/unavailability   replaces them, and records that the teacher answered
- *   GET /availability        the admin's overview: who has answered, and what
- */
 @Controller()
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth()

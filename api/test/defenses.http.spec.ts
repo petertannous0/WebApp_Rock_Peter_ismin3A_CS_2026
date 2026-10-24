@@ -7,7 +7,6 @@ import { PrismaService } from '../src/prisma/prisma.service.js';
 import { generateSlots } from '../src/session/slots.js';
 import { prismaMock, type PrismaMock } from './prisma-mock.js';
 
-/** /defenses over HTTP, a fake Prisma behind: the shape of a refusal, and who may call. */
 describe('/defenses over HTTP', () => {
   let app: INestApplication;
   let prisma: PrismaMock;

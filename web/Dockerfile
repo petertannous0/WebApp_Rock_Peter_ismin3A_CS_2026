@@ -1,6 +1,3 @@
-# The image of the front, in two stages: Node builds, nginx serves.
-# No Node in the final image.
-
 FROM node:26-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./

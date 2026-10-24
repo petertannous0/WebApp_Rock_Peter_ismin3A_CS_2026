@@ -7,7 +7,6 @@ import type { CompanyTutorView, CompanyView } from './company.js';
 
 type TutorInput = { firstName: string; lastName: string; email: string; companyId: number };
 
-/** Companies and their tutors: added and edited by the admin, never deleted (cut). */
 @Injectable()
 export class CompaniesService {
   constructor(private readonly prisma: PrismaService) {}
@@ -63,7 +62,6 @@ export class CompaniesService {
     return this.toTutor(row);
   }
 
-  /** A tutor cannot change company while a student of the old one has them as tutor. */
   async updateTutor(id: number, patch: Partial<TutorInput>): Promise<CompanyTutorView> {
     const tutor = await this.prisma.companyTutor.findUnique({ where: { id }, include: { _count: { select: { students: true } } } });
     if (!tutor) throw new NotFound('Company tutor', id);

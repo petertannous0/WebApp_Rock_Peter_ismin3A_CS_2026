@@ -3,7 +3,6 @@ import { useAuth } from '../auth/AuthProvider';
 import { HOME_BY_ROLE } from '../auth/roles';
 import { ROLE_LABELS, type Role } from '../types';
 
-/** The links of each role. Each page is still guarded by RequireRole, and each request by the API. */
 const LINKS: Record<Role, { to: string; label: string }[]> = {
   ADMIN: [
     { to: '/admin', label: 'Tableau de bord' },
@@ -20,7 +19,6 @@ const LINKS: Record<Role, { to: string; label: string }[]> = {
   ELEVE: [{ to: '/eleve', label: 'Ma soutenance' }],
 };
 
-/** The top of every page: the title, the links of the role, who is logged in. */
 export const Header = () => {
   const { user, logout } = useAuth();
 

@@ -9,7 +9,6 @@ type TeacherRow = Teacher & { _count: { tutoredStudents: number } };
 
 const withCount = { _count: { select: { tutoredStudents: true } } } as const;
 
-/** Teachers: added and edited by the admin, never deleted (cut). */
 @Injectable()
 export class TeachersService {
   constructor(private readonly prisma: PrismaService) {}

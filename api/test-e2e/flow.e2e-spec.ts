@@ -95,7 +95,6 @@ describe('Soutenances, end to end on SQLite', () => {
     const student = students.find((s) => !s.placed)!;
     const where = { studentId: student.id, slotId: slot(4, 11).id, roomId: room('Salle B').id };
 
-    // The first second teacher that breaks no rule at all.
     let secondTeacherId = 0;
     for (const teacher of teachers) {
       const check = await api().post('/defenses/check').set(as('ADMIN')).send({ ...where, secondTeacherId: teacher.id }).expect(200);

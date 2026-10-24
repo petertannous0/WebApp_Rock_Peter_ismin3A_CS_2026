@@ -25,7 +25,6 @@ export async function checkPersonEmail(
   return normalized;
 }
 
-/** The login of the person's account follows their new email. */
 export async function syncAccountEmail(prisma: PrismaService, userId: number | null, email: string): Promise<void> {
   if (userId !== null) await prisma.user.update({ where: { id: userId }, data: { email } });
 }

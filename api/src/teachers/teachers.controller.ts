@@ -15,7 +15,6 @@ import { PersonDto, PersonPatchDto } from '../common/person.dto.js';
 import type { TeacherView } from './teacher.js';
 import { TeachersService } from './teachers.service.js';
 
-/** Teachers: the admin's business only. A teacher edits their own unavailability, at /me. */
 @Controller('teachers')
 @Roles('ADMIN')
 @UseGuards(AuthGuard, RolesGuard)

@@ -29,9 +29,9 @@ const slotId = (dayIndex: number, indexInDay: number) => dayIndex * 12 + indexIn
 const AT_8_30 = 0;
 const AT_9_10 = 1;
 const AT_9_50 = 2;
-const AT_11_50 = 5; // last slot of the morning, ends 12:30
-const AT_13_30 = 6; // first slot of the afternoon
-const AT_16_50 = 11; // last slot of the day, ends 17:30
+const AT_11_50 = 5;
+const AT_13_30 = 6;
+const AT_16_50 = 11;
 
 const [DURAND, ROUX, BLANC, PETIT] = [1, 2, 3, 4];
 const [JEAN, INES] = [10, 11];
@@ -67,7 +67,6 @@ function baseState(): PlacementState {
     companyTutors: [
       { id: JEAN, name: 'Jean Roux' },
       { id: INES, name: 'Inès Faure' },
-      // one tutor per generated student
       ...Array.from({ length: 50 }, (_, i) => ({ id: 130 + i, name: `Tuteur ${30 + i}` })),
     ],
     students: [
@@ -88,7 +87,6 @@ function placed(fields: Omit<PlacedDefense, 'id'> & { id?: number }): PlacedDefe
   return { id: nextDefenseId++, ...fields };
 }
 
-/** Léa, Monday 9:10, room A, second teacher Blanc: valid in the base state. */
 const lea: ProposedDefense = { studentId: LEA, secondTeacherId: BLANC, slotId: slotId(MONDAY, AT_9_10), roomId: ROOM_A };
 
 const rules = (violations: Violation[]): Rule[] => violations.map((v) => v.rule);
@@ -103,7 +101,6 @@ describe('checkPlacement', () => {
     expect(checkPlacement(lea, state)).toEqual([]);
   });
 
-  // ─── Rule 1 ──────────────────────────────────────────────────────────────
   describe('rule 1: a teacher already in another defense at that slot', () => {
     it("catches the student's academic tutor, busy as second teacher elsewhere", () => {
       // Tom's jury: Petit (his academic tutor) and Durand, at Léa's slot.
@@ -148,7 +145,6 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Rule 2 ──────────────────────────────────────────────────────────────
   describe('rule 2: a teacher unavailable that half-day', () => {
     it('catches the academic tutor, unavailable that morning', () => {
       state.unavailabilities.push({ teacherId: DURAND, day: '2027-06-21', halfDay: 'MORNING' });
@@ -183,7 +179,6 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Rule 3 ──────────────────────────────────────────────────────────────
   describe('rule 3: the room already used at that slot', () => {
     it('catches a room already taken', () => {
       state.defenses.push(placed({ studentId: 30, secondTeacherId: ROUX, slotId: lea.slotId, roomId: ROOM_A }));
@@ -206,7 +201,6 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Rule 4 ──────────────────────────────────────────────────────────────
   describe('rule 4: the room unavailable, Thursday afternoon', () => {
     it('catches room C on Thursday at 13:30', () => {
       expect(checkPlacement({ ...lea, slotId: slotId(THURSDAY, AT_13_30), roomId: ROOM_C }, state)).toEqual([
@@ -231,9 +225,7 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Rule 5 ──────────────────────────────────────────────────────────────
   describe('rule 5: a teacher over 6 defenses that day', () => {
-    /** `count` defenses on Monday where Blanc is the second teacher, in room B, at slots other than Léa's. */
     function blancAlreadyHas(count: number, dayIndex = MONDAY) {
       const freeSlots = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // not 1: Léa's slot
       for (let i = 0; i < count; i++) {
@@ -292,7 +284,6 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Rule 6 ──────────────────────────────────────────────────────────────
   describe('rule 6: the company tutor already in another defense at that slot', () => {
     it("catches Léa's company tutor, already on Hugo's jury at 9:10", () => {
       state.defenses.push(placed({ studentId: HUGO, secondTeacherId: PETIT, slotId: lea.slotId, roomId: ROOM_B }));
@@ -313,7 +304,6 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Rule 7 ──────────────────────────────────────────────────────────────
   describe('rule 7: the same-company rule', () => {
     it("refuses Hugo's academic tutor as Léa's second teacher: same company", () => {
       expect(checkPlacement({ ...lea, secondTeacherId: ROUX }, state)).toEqual([
@@ -343,7 +333,6 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Rule 8 ──────────────────────────────────────────────────────────────
   describe("rule 8: the second teacher is the student's academic tutor", () => {
     it('refuses Durand as second teacher of his own student Léa', () => {
       expect(checkPlacement({ ...lea, secondTeacherId: DURAND }, state)).toEqual([
@@ -361,7 +350,6 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Rule 9 ──────────────────────────────────────────────────────────────
   describe('rule 9: the student already placed', () => {
     it('refuses a second defense for Léa', () => {
       state.defenses.push(placed({ studentId: LEA, secondTeacherId: BLANC, slotId: slotId(WEDNESDAY, AT_8_30), roomId: ROOM_B }));
@@ -386,7 +374,6 @@ describe('checkPlacement', () => {
     });
   });
 
-  // ─── Together ────────────────────────────────────────────────────────────
   it('returns every broken rule at once, not only the first one', () => {
     state.unavailabilities.push({ teacherId: DURAND, day: '2027-06-24', halfDay: 'AFTERNOON' });
     state.defenses.push(placed({ studentId: HUGO, secondTeacherId: PETIT, slotId: slotId(THURSDAY, AT_13_30), roomId: ROOM_A }));

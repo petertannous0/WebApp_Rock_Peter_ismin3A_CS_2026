@@ -6,7 +6,6 @@ import { useLogoutOn401 } from '../../auth/useLogoutOn401';
 import { SERVICE_DOWN_TEXT, ServiceDownAlert } from '../../components/ServiceDown';
 import { ROLE_LABELS, type Account, type AccountRole, type Student, type Teacher } from '../../types';
 
-/** What the admin reads for each error of POST /users. The 400 adds what the API explained. */
 function describeError(error: unknown): string {
   if (isApiDown(error)) return `😢 Service indisponible. ${SERVICE_DOWN_TEXT}`;
   if (error instanceof ApiError) {
@@ -17,11 +16,6 @@ function describeError(error: unknown): string {
   return `Impossible de créer le compte : ${error instanceof Error ? error.message : String(error)}`;
 }
 
-/**
- * The accounts, at /admin/comptes. An account is created for a teacher or a
- * student who already exists: the login is their e-mail, the admin types the
- * first password and passes it on.
- */
 export const AccountsPage = () => {
   const { token } = useAuth();
   const queryClient = useQueryClient();

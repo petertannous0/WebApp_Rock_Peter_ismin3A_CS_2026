@@ -42,7 +42,6 @@ function api({ defenses = [leaDefense], check = clean }: { defenses?: Defense[];
   });
 }
 
-/** Opens the panel on Monday 8:30 room B, then picks Hugo and Durand. */
 async function placeHugoAt830RoomB() {
   await userEvent.click(await screen.findByRole('button', { name: 'Placer lun. 21 8 h 30, Salle B' }));
   await userEvent.selectOptions(screen.getByLabelText('Élève'), '13');

@@ -8,7 +8,6 @@ import { formatDay, formatShortDay, formatTime } from '../../format';
 import type { Defense, Room, Session, Slot, Student } from '../../types';
 import { PlacementPanel, type Selection } from './PlacementPanel';
 
-/** Thursday: dayIndex 3, Monday being 0. Its afternoon, some rooms are closed. */
 const THURSDAY = 3;
 
 function isClosed(room: Room, slot: Slot): boolean {
@@ -22,12 +21,6 @@ function selectionKey(selection: Selection): string {
     : `place-${selection.studentId ?? ''}-${selection.slotId ?? ''}-${selection.roomId ?? ''}`;
 }
 
-/**
- * The placement grid, at /admin/placement (F2): one day at a time (decision
- * P5-c), 12 slots × the rooms. A click on an empty cell places a defense there;
- * a click on a defense moves or deletes it. The students still to place are
- * listed beside, and the placed defenses that are now in conflict are flagged.
- */
 export const PlacementPage = () => {
   const { token } = useAuth();
   const session = useQuery({ queryKey: ['session'], queryFn: () => fetchSession(token!) });
@@ -139,7 +132,6 @@ interface DayGridProps {
   onSelect: (selection: Selection) => void;
 }
 
-/** One day: a row per slot, a column per room, the lunch break between the half-days. */
 const DayGrid = ({ session, dayIndex, defenses, onSelect }: DayGridProps) => {
   const slots = session.slots.filter((slot) => slot.dayIndex === dayIndex);
   const at = (slot: Slot, room: Room) => defenses.find((d) => d.slotId === slot.id && d.roomId === room.id);
@@ -218,7 +210,6 @@ const DayGrid = ({ session, dayIndex, defenses, onSelect }: DayGridProps) => {
   );
 };
 
-/** The students still to place, highlighted beside the grid. A click picks one for the panel. */
 const UnplacedList = ({ students, onPick }: { students: Student[]; onPick: (student: Student) => void }) => {
   const [search, setSearch] = useState('');
   const needle = search.trim().toLowerCase();

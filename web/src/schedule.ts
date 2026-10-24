@@ -1,12 +1,6 @@
 import { formatDayWithYear, formatTime } from './format';
 import type { CompanyTutorSchedule } from './types';
 
-/**
- * The text the admin pastes into an email to a company tutor (they have no
- * account, and the app sends no email). Pure: tested on its own.
- *
- * "Bonjour," with no civility: the data has none (decision P5-d).
- */
 export function companyTutorEmailText(tutor: CompanyTutorSchedule): string {
   const lines = tutor.defenses.map(
     (d) =>

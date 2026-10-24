@@ -11,14 +11,10 @@ import {
   type TeacherAvailability,
 } from './availability.js';
 
-const byDayThenHalfDay = [{ date: 'asc' }, { halfDay: 'desc' }] as const; // MORNING before AFTERNOON
+const byDayThenHalfDay = [{ date: 'asc' }, { halfDay: 'desc' }] as const;
 
 const toHalfDay = (row: TeacherUnavailability): HalfDaySlot => ({ day: toDay(row.date), halfDay: row.halfDay });
 
-/**
- * The teachers' unavailability, by half-day. A teacher replaces their whole
- * list at once, and saving (even an empty list) records that they answered.
- */
 @Injectable()
 export class AvailabilityService {
   constructor(
@@ -38,7 +34,6 @@ export class AvailabilityService {
     const unavailable = rows.map(toHalfDay);
     const isUnavailable = new Set(unavailable.map((h) => `${h.day}|${h.halfDay}`));
 
-    // The defenses where they sit on the jury, either role.
     const defenses = await this.prisma.defense.findMany({
       where: { OR: [{ secondTeacherId: teacher.id }, { student: { academicTutorId: teacher.id } }] },
       include: { slot: true, room: true, student: true },
@@ -77,7 +72,6 @@ export class AvailabilityService {
     return this.mine(userId);
   }
 
-  /** Every teacher, answered or not: who to chase. */
   async overview(): Promise<TeacherAvailability[]> {
     const rows = await this.prisma.teacher.findMany({
       include: { unavailabilities: { orderBy: [...byDayThenHalfDay] } },

@@ -1,21 +1,7 @@
 /**
- * Populates an empty database with a realistic session. Deterministic: a
- * fixed-seed random generator, so every run produces the same data.
- *
- *   npm run db:seed
- *
  * Runs at every `docker compose up` (service `migrate`): when a session
  * already exists, it does nothing, so the admin's changes are never overwritten.
  * Same for the accounts: seeded only when there is none.
- *
- *   - the session: Monday 21 – Friday 25 June 2027, 4 rooms, 60 slots,
- *     rooms C and D closed on Thursday afternoon
- *   - 35 teachers, each the academic tutor of 2 to 4 students
- *   - 65 companies, 100 students: 10 companies with 3 students, 15 with 2,
- *     most of them sharing one company tutor (same-company rule, tutor clashes)
- *   - 25 teachers have entered their unavailability, 10 have not
- *   - 10 defenses already placed on Monday morning, all valid
- *   - 3 demo accounts: the admin, a teacher and a student (password below)
  */
 import 'dotenv/config';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
@@ -26,9 +12,6 @@ import { generateSlots } from '../src/session/slots.js';
 const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? 'file:./dev.db' });
 const prisma = new PrismaClient({ adapter });
 
-// ─── Deterministic randomness ──────────────────────────────────────────────
-
-/** mulberry32: a tiny generator with a fixed seed. Same seed, same sequence. */
 function generator(seed: number): () => number {
   let state = seed;
   return () => {
@@ -50,8 +33,6 @@ function shuffle<T>(list: readonly T[]): T[] {
   return copy;
 }
 
-// ─── Names ─────────────────────────────────────────────────────────────────
-
 const FIRST_NAMES = [
   'Léa', 'Hugo', 'Chloé', 'Lucas', 'Emma', 'Louis', 'Manon', 'Gabriel', 'Camille', 'Arthur',
   'Inès', 'Jules', 'Sarah', 'Nathan', 'Jade', 'Raphaël', 'Lina', 'Adam', 'Zoé', 'Tom',
@@ -72,7 +53,6 @@ const LAST_NAMES = [
 const COMPANY_PREFIXES = ['Provence', 'Azur', 'Calanque', 'Mistral', 'Lumière', 'Sainte-Victoire', 'Luberon', 'Camargue', 'Durance', 'Estérel'];
 const COMPANY_SUFFIXES = ['Microsystèmes', 'Électronique', 'Semiconducteurs', 'Énergie', 'Robotique', 'Logiciel', 'Aéro', 'Santé', 'Data', 'Photonique'];
 
-/** "Léa Lefèvre" → "lea.lefevre" */
 function slug(...parts: string[]): string {
   return parts
     .map((part) => part.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z]+/g, '-'))
@@ -81,7 +61,6 @@ function slug(...parts: string[]): string {
 
 const usedNames = new Set<string>();
 
-/** A first and last name never given to anyone else in the seed. */
 function newPerson(): { firstName: string; lastName: string } {
   for (;;) {
     const firstName = FIRST_NAMES[Math.floor(random() * FIRST_NAMES.length)];
@@ -93,8 +72,6 @@ function newPerson(): { firstName: string; lastName: string } {
     }
   }
 }
-
-// ─── The seed ──────────────────────────────────────────────────────────────
 
 const SESSION_NAME = 'Soutenances 3A, juin 2027';
 const MONDAY = new Date(Date.UTC(2027, 5, 21));
@@ -113,7 +90,6 @@ async function main(): Promise<void> {
   }
 }
 
-/** The password of the three demo accounts, documented in README.md. */
 const DEMO_PASSWORD = 'soutenance2027';
 
 /**
@@ -143,7 +119,6 @@ async function seedAccounts(): Promise<void> {
 }
 
 async function seedSession(): Promise<void> {
-  // The session, its rooms and its slots
   const session = await prisma.session.create({ data: { name: SESSION_NAME, startDate: MONDAY } });
   const rooms: Room[] = [];
   for (const name of ['A', 'B', 'C', 'D']) {
@@ -161,7 +136,6 @@ async function seedSession(): Promise<void> {
   await prisma.slot.createMany({ data: generateSlots(MONDAY).map((slot) => ({ ...slot, sessionId: session.id })) });
   const slots = await prisma.slot.findMany({ where: { sessionId: session.id }, orderBy: [{ dayIndex: 'asc' }, { indexInDay: 'asc' }] });
 
-  // 35 teachers
   const teachers: Teacher[] = [];
   for (let i = 0; i < 35; i++) {
     const person = newPerson();
@@ -172,11 +146,9 @@ async function seedSession(): Promise<void> {
     );
   }
 
-  // 65 companies: 10 × 3 students, 15 × 2, 40 × 1. Each gets its tutors.
   const companyNames = shuffle(COMPANY_PREFIXES.flatMap((prefix) => COMPANY_SUFFIXES.map((suffix) => `${prefix} ${suffix}`))).slice(0, 65);
   const sizes = [...Array<number>(10).fill(3), ...Array<number>(15).fill(2), ...Array<number>(40).fill(1)];
 
-  // Who is academic tutor of how many: 20 × 3 + 5 × 4 + 10 × 2 = 100, shuffled over the students.
   const tutorCounts = shuffle([...Array<number>(20).fill(3), ...Array<number>(5).fill(4), ...Array<number>(10).fill(2)]);
   const academicTutors = shuffle(teachers.flatMap((teacher, i) => Array<Teacher>(tutorCounts[i]).fill(teacher)));
 
@@ -186,7 +158,6 @@ async function seedSession(): Promise<void> {
     const size = sizes[c];
     const domain = slug(name).replace(/\./g, '-');
 
-    // Most multi-student companies share one tutor; a few (every 3rd) have one tutor per student.
     const tutorCount = size > 1 && c % 3 === 0 ? size : 1;
     const tutors = [];
     for (let t = 0; t < tutorCount; t++) {
@@ -214,11 +185,10 @@ async function seedSession(): Promise<void> {
     }
   }
 
-  // 25 teachers have answered, some with no unavailability at all; 10 have not.
   const unavailable = new Set<string>();
   for (const [i, teacher] of teachers.entries()) {
     if (i >= 25) continue;
-    const count = i % 4; // 0, 1, 2 or 3 half-days
+    const count = i % 4;
     const chosen = shuffle(slots.filter((slot) => slot.indexInDay === 0 || slot.indexInDay === 6)).slice(0, count);
     for (const slot of chosen) {
       await prisma.teacherUnavailability.create({ data: { teacherId: teacher.id, date: slot.date, halfDay: slot.halfDay } });
@@ -227,7 +197,6 @@ async function seedSession(): Promise<void> {
     await prisma.teacher.update({ where: { id: teacher.id }, data: { availabilitySubmittedAt: new Date(Date.UTC(2027, 4, 10 + i)) } });
   }
 
-  // 10 valid defenses on Monday morning, slots 8:30 to 9:50, rooms A to D.
   // The checks here are the client's rules, written inline: the seed must not
   // produce a conflict the app would then report.
   const placed: { slotId: number; teacherIds: number[]; companyTutorId: number }[] = [];
@@ -246,7 +215,6 @@ async function seedSession(): Promise<void> {
       if (!isFree(student.academicTutorId)) continue;
       if (placed.some((defense) => defense.slotId === slot.id && defense.companyTutorId === student.companyTutorId)) continue;
 
-      // Same-company rule: not the academic tutor of another student of this company.
       const forbidden = new Set(students.filter((other) => other.companyId === student.companyId).map((other) => other.academicTutorId));
       const second = shuffle(teachers).find((teacher) => !forbidden.has(teacher.id) && isFree(teacher.id));
       if (!second) continue;

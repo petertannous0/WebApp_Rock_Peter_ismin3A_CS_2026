@@ -7,12 +7,6 @@ import { AccessTokenDto } from './dto/access-token.dto.js';
 import { JwtPayloadDto } from './dto/jwt-payload.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 
-/**
- *   POST /auth/login   { email, password }  →  { access_token }, or 401
- *   GET  /auth/whoami  with a Bearer token   →  the token's payload, or 401
- *
- * No sign-up route: accounts are created by the admin, POST /users.
- */
 @Controller('auth')
 export class AuthController {
   constructor(private readonly auth: AuthService) {}

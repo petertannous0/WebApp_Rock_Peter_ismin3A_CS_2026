@@ -16,7 +16,6 @@ import { CreateStudentDto, UpdateStudentDto } from './dto/student.dto.js';
 import type { StudentView } from './student.js';
 import { StudentsService } from './students.service.js';
 
-/** Students: the admin's business only. */
 @Controller('students')
 @Roles('ADMIN')
 @UseGuards(AuthGuard, RolesGuard)

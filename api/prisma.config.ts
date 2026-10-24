@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { defineConfig } from 'prisma/config';
 
-/** Where the database is, and how to seed it. */
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {

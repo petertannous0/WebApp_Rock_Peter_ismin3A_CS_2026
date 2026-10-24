@@ -9,7 +9,6 @@ import type { PersonInput } from '../../types';
 
 const EMPTY: PersonInput = { firstName: '', lastName: '', email: '' };
 
-/** The teachers, at /admin/enseignants. Added and edited, never deleted. */
 export const TeachersPage = () => {
   const { token } = useAuth();
   const queryClient = useQueryClient();

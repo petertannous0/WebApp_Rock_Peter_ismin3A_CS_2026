@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsOptional, Min } from 'class-validator';
 
-/** What the admin chooses. The academic tutor and the company tutor come from the student. */
 export class CheckDefenseDto {
   @ApiProperty({ example: 20 })
   @IsInt()

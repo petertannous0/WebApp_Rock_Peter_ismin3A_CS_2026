@@ -23,7 +23,6 @@ function compose(...args) {
   return spawnSync('docker', ['compose', ...args], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
 
-/** Retries `fn` until it stops throwing, or until `seconds` have passed. */
 async function retry(fn, seconds) {
   const deadline = Date.now() + seconds * 1000;
   let lastError;
@@ -75,7 +74,6 @@ await check('migrate exited with code 0', '`docker compose logs migrate`', async
   if (service.ExitCode !== 0) throw new Error(`migrate exited with code ${service.ExitCode}`);
 }, 30);
 
-/** The demo accounts of the seed (api/prisma/seed.ts), one per role. */
 const DEMO_PASSWORD = 'soutenance2027';
 const DEMO = [
   ['ADMIN', 'admin@castelmont.fr'],

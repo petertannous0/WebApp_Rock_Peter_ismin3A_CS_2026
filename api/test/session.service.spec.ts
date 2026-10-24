@@ -16,7 +16,6 @@ const rooms = [
   { name: 'Salle C', videoLink: 'https://visio.castelmont.fr/salle-c', closedThursdayAfternoon: true },
 ];
 
-/** The session row the fake database holds, with ids on rooms and slots. */
 function sessionRow(start = monday) {
   return {
     id: 1,
@@ -110,7 +109,6 @@ describe('SessionService', () => {
 
       expect(prisma.slot.deleteMany).toHaveBeenCalledWith({ where: { sessionId: 1 } });
       expect(prisma.slot.createMany.mock.calls[0][0].data[0].date).toEqual(new Date('2027-06-28T00:00:00.000Z'));
-      // Thursday 24 June → Thursday 1 July
       expect(prisma.teacherUnavailability.update).toHaveBeenCalledWith({
         where: { id: 9 },
         data: { date: new Date('2027-07-01T00:00:00.000Z') },

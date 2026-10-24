@@ -15,7 +15,6 @@ import { CompaniesService } from './companies.service.js';
 import type { CompanyTutorView, CompanyView } from './company.js';
 import { CompanyDto, CreateCompanyTutorDto, UpdateCompanyTutorDto } from './dto/company.dto.js';
 
-/** Companies and company tutors: the admin's business only. */
 @Controller()
 @Roles('ADMIN')
 @UseGuards(AuthGuard, RolesGuard)

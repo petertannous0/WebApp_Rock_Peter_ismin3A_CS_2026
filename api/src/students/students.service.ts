@@ -36,7 +36,6 @@ export class StudentsService {
     };
   }
 
-  /** The company, the tutor and the academic tutor exist, and the tutor works for that company. */
   private async checkReferences(input: Pick<StudentInput, 'companyId' | 'companyTutorId' | 'academicTutorId'>): Promise<void> {
     if (!(await this.prisma.company.findUnique({ where: { id: input.companyId } }))) {
       throw new InvalidReference(`Company ${input.companyId} does not exist`);

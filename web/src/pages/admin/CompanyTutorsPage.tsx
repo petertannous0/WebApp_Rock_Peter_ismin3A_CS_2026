@@ -7,10 +7,6 @@ import { ErrorAlert } from '../../components/ErrorAlert';
 import { companyTutorEmailText } from '../../schedule';
 import type { CompanyTutorSchedule } from '../../types';
 
-/**
- * The company tutors' defenses, at /admin/tuteurs (F3). They have no account:
- * one ready-to-send text per tutor, to copy into an email. The app sends none.
- */
 export const CompanyTutorsPage = () => {
   const { token } = useAuth();
   const schedules = useQuery({ queryKey: ['company-tutor-schedules'], queryFn: () => fetchCompanyTutorSchedules(token!) });

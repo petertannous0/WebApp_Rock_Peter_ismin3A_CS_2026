@@ -6,11 +6,6 @@ import { useLogoutOn401 } from '../../auth/useLogoutOn401';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { formatDate, formatShortDay, HALF_DAY_LABELS } from '../../format';
 
-/**
- * Who has entered their availability, at /admin/disponibilites: the list to
- * chase, and each teacher's unavailable half-days. A teacher without an
- * account cannot answer: it says so.
- */
 export const AvailabilityPage = () => {
   const { token } = useAuth();
   const overview = useQuery({ queryKey: ['availability'], queryFn: () => fetchAvailabilityOverview(token!) });

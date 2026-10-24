@@ -5,12 +5,10 @@ import { useAuth } from '../auth/AuthProvider';
 import { HOME_BY_ROLE } from '../auth/roles';
 import { SERVICE_DOWN_TEXT } from '../components/ServiceDown';
 
-/** What RequireRole leaves in the state of the navigation: the page that was asked for. */
 interface FromState {
   from?: string;
 }
 
-/** The login page, at /login. No sign-up: the accounts are created by the administration. */
 export const LoginPage = () => {
   const { user, login } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +19,6 @@ export const LoginPage = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Already logged in: nothing to do here.
   if (user && !submitting) return <Navigate to={HOME_BY_ROLE[user.role]} replace />;
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
@@ -31,7 +28,6 @@ export const LoginPage = () => {
 
     try {
       const payload = await login(email, password);
-      // Back to the page RequireRole came from, or to the home page of the role.
       const from = (location.state as FromState | null)?.from;
       navigate(from ?? HOME_BY_ROLE[payload.role], { replace: true });
     } catch (err) {

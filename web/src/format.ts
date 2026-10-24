@@ -10,22 +10,18 @@ const DAY = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', 
 const SHORT_DAY = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', timeZone: 'UTC' });
 const DATE = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-/** "2027-06-21" → "lundi 21 juin" */
 export function formatDay(day: string): string {
   return DAY.format(new Date(`${day}T00:00:00Z`));
 }
 
-/** "2027-06-21" → "lun. 21" */
 export function formatShortDay(day: string): string {
   return SHORT_DAY.format(new Date(`${day}T00:00:00Z`));
 }
 
-/** 550 → "9 h 10", 810 → "13 h 30": the client's way of writing a time. */
 export function formatTime(minutes: number): string {
   return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')}`;
 }
 
-/** An ISO timestamp → "10/05/2027" */
 export function formatDate(iso: string): string {
   return DATE.format(new Date(iso));
 }
@@ -35,14 +31,12 @@ export const HALF_DAY_LABELS: Record<HalfDay, string> = {
   AFTERNOON: 'après-midi',
 };
 
-/** "lundi 21 juin, après-midi" */
 export function formatHalfDay(day: string, halfDay: HalfDay): string {
   return `${formatDay(day)}, ${HALF_DAY_LABELS[halfDay]}`;
 }
 
 const DAY_WITH_YEAR = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-/** "2027-06-21" → "lundi 21 juin 2027", for a text read outside the app */
 export function formatDayWithYear(day: string): string {
   return DAY_WITH_YEAR.format(new Date(`${day}T00:00:00Z`));
 }

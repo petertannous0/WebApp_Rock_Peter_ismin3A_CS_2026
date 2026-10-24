@@ -10,13 +10,9 @@
 
 import { THURSDAY, type HalfDay } from '../session/slots.js';
 
-// ─── The state ─────────────────────────────────────────────────────────────
-
 export interface SlotInfo {
   id: number;
-  /** "YYYY-MM-DD" */
   day: string;
-  /** 0 = Monday … 4 = Friday */
   dayIndex: number;
   startMinutes: number;
   halfDay: HalfDay;
@@ -54,7 +50,6 @@ export interface PlacedDefense {
   roomId: number;
 }
 
-/** Everything the rules need to know, already loaded. */
 export interface PlacementState {
   slots: SlotInfo[];
   rooms: RoomInfo[];
@@ -75,9 +70,6 @@ export interface ProposedDefense {
   defenseId?: number;
 }
 
-// ─── The violations ────────────────────────────────────────────────────────
-
-/** Where and when another defense is: to say "with whom, at what time, in which room". */
 export interface OtherDefense {
   studentName: string;
   day: string;
@@ -86,23 +78,14 @@ export interface OtherDefense {
 }
 
 export type Violation =
-  /** Rule 1: a teacher of the jury already sits on another jury at that slot. */
   | { rule: 'TEACHER_BUSY'; teacher: PersonInfo; other: OtherDefense }
-  /** Rule 2: a teacher of the jury said they are unavailable that half-day. */
   | { rule: 'TEACHER_UNAVAILABLE'; teacher: PersonInfo; day: string; halfDay: HalfDay }
-  /** Rule 3: the room already hosts a defense at that slot. */
   | { rule: 'ROOM_TAKEN'; roomName: string; other: OtherDefense }
-  /** Rule 4: the room is closed then (Thursday afternoon). */
   | { rule: 'ROOM_CLOSED'; roomName: string; day: string }
-  /** Rule 5: a teacher would sit on more than 6 juries that day. `count` includes this one. */
   | { rule: 'TEACHER_OVERLOADED'; teacher: PersonInfo; day: string; count: number }
-  /** Rule 6: the company tutor already sits on another jury at that slot. */
   | { rule: 'COMPANY_TUTOR_BUSY'; companyTutor: PersonInfo; other: OtherDefense }
-  /** Rule 7: the second teacher is the academic tutor of another student of the same company. */
   | { rule: 'SAME_COMPANY'; secondTeacher: PersonInfo; otherStudentName: string; companyName: string }
-  /** Rule 8: the second teacher is the student's own academic tutor. */
   | { rule: 'SECOND_TEACHER_IS_ACADEMIC_TUTOR'; teacher: PersonInfo; studentName: string }
-  /** Rule 9: the student already has a defense. */
   | { rule: 'STUDENT_ALREADY_PLACED'; studentName: string; other: OtherDefense };
 
 export type Rule = Violation['rule'];
@@ -125,7 +108,6 @@ export const SEVERITY: Record<Rule, Severity> = {
   STUDENT_ALREADY_PLACED: 'BLOCKING',
 };
 
-/** The client's limit: at most 6 defenses per teacher per day. */
 export const MAX_DEFENSES_PER_TEACHER_PER_DAY = 6;
 
 /** A proposed defense points at an id the state does not hold: a bug of the caller, not a rule. */
@@ -135,20 +117,16 @@ export class UnknownId extends Error {
   }
 }
 
-// ─── The checker ───────────────────────────────────────────────────────────
-
 function find<T extends { id: number }>(list: T[], id: number, what: string): T {
   const found = list.find((item) => item.id === id);
   if (!found) throw new UnknownId(what, id);
   return found;
 }
 
-/** True when the room is closed during this slot: Thursday afternoon, for the rooms marked so. */
 export function isRoomClosed(room: RoomInfo, slot: SlotInfo): boolean {
   return room.closedThursdayAfternoon && slot.dayIndex === THURSDAY && slot.halfDay === 'AFTERNOON';
 }
 
-/** Every rule the proposed defense breaks, in the order of the rules. Empty: it can be saved. */
 export function checkPlacement(proposed: ProposedDefense, state: PlacementState): Violation[] {
   const student = find(state.students, proposed.studentId, 'student');
   const slot = find(state.slots, proposed.slotId, 'slot');
@@ -236,7 +214,6 @@ export function checkPlacement(proposed: ProposedDefense, state: PlacementState)
   return violations;
 }
 
-/** True when nothing blocks: the save goes through, with `force` if there are warnings. */
 export function canBeSaved(violations: Violation[]): boolean {
   return violations.every((violation) => SEVERITY[violation.rule] !== 'BLOCKING');
 }

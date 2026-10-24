@@ -8,7 +8,6 @@ const jean = { id: 10, firstName: 'Jean', lastName: 'Roux', email: 'jean.roux@pr
 const company = { id: 1, name: 'Provence Microsystèmes' };
 const roomA = { id: 1, name: 'Salle A', videoLink: 'https://visio.castelmont.fr/salle-a' };
 
-/** A defense row as findMany with `include` returns it. */
 function row(id: number, student: { id: number; firstName: string; lastName: string; academicTutorId: number }, secondTeacher: typeof durand, slot: { dayIndex: number; startMinutes: number }) {
   return {
     id,

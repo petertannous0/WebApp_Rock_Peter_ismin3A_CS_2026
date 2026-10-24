@@ -17,7 +17,6 @@ import { PlacementRefused, type CheckResult, type DefenseView } from './defense.
 import { DefensesService } from './defenses.service.js';
 import { CheckDefenseDto, CreateDefenseDto, MoveDefenseDto } from './dto/defense.dto.js';
 
-/** A refused placement: 409, with the whole list of violations for the admin to read. */
 function mapErrors(error: unknown): never {
   if (error instanceof PlacementRefused) {
     throw new ConflictException({ statusCode: 409, message: error.message, ...error.result });
@@ -25,13 +24,6 @@ function mapErrors(error: unknown): never {
   return toHttp(error);
 }
 
-/**
- *   GET    /defenses          every placed defense, with its current conflicts
- *   POST   /defenses/check    the dry run: the violations, nothing saved
- *   POST   /defenses          place; 409 + violations when refused
- *   PATCH  /defenses/:id      move (slot, room, second teacher); same checks
- *   DELETE /defenses/:id      remove
- */
 @Controller('defenses')
 @Roles('ADMIN')
 @UseGuards(AuthGuard, RolesGuard)

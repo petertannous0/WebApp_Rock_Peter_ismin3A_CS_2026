@@ -1,10 +1,5 @@
 import type { Company, Session, Slot, Student, Teacher } from './types';
 
-/**
- * Data written by hand for the tests, the shape the API answers. The app
- * reads the API: only the tests use them, as the answers of the fake API.
- */
-
 const DAYS = ['2027-06-21', '2027-06-22', '2027-06-23', '2027-06-24', '2027-06-25'];
 
 function slots(): Slot[] {

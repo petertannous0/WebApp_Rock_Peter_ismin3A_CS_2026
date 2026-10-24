@@ -21,11 +21,6 @@ import { TeacherHomePage } from './pages/teacher/TeacherHomePage';
 
 const admin = (page: ReactNode) => <RequireRole roles={['ADMIN']}>{page}</RequireRole>;
 
-/**
- * The frame of every page: the header, then the page of the current URL.
- * One area per role: /admin, /enseignant, /eleve, each guarded by RequireRole.
- * While the API is down, ServiceDown takes the place of every page.
- */
 const App = () => {
   const health = useApiHealth();
 

@@ -3,17 +3,10 @@ import { ServiceDownAlert } from './ServiceDown';
 
 interface ErrorAlertProps {
   error: unknown;
-  /** What the user reads for each status the page expects: 404, 409, 422… */
   messages?: Partial<Record<number, string>>;
-  /** The start of the sentence for any other error: "Impossible d'enregistrer". */
   fallback: string;
 }
 
-/**
- * The error of a request, in French. A 400 lists what the API explained, one
- * line per invalid field; an expected status gets the page's own sentence.
- * The API down: the "service indisponible" message, whatever the page.
- */
 export const ErrorAlert = ({ error, messages = {}, fallback }: ErrorAlertProps) => {
   if (isApiDown(error)) return <ServiceDownAlert />;
 

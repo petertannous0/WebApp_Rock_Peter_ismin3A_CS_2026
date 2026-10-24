@@ -7,14 +7,12 @@ import { ErrorAlert } from '../../components/ErrorAlert';
 import { formatDay } from '../../format';
 import type { Room, RoomInput, Session } from '../../types';
 
-/** The client's setting: 4 rooms, C and D closed on Thursday afternoon. Editable before creating. */
 const DEFAULT_ROOMS: RoomInput[] = ['A', 'B', 'C', 'D'].map((letter) => ({
   name: `Salle ${letter}`,
   videoLink: `https://visio.castelmont.fr/salle-${letter.toLowerCase()}`,
   closedThursdayAfternoon: letter === 'C' || letter === 'D',
 }));
 
-/** The session, at /admin/session: created once, then its rooms and its week can be edited. */
 export const SessionPage = () => {
   const { token } = useAuth();
   const session = useQuery({ queryKey: ['session'], queryFn: () => fetchSession(token!) });

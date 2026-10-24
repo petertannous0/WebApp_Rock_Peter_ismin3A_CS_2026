@@ -5,7 +5,6 @@ import { useAuth } from './AuthProvider';
 import { HOME_BY_ROLE } from './roles';
 
 interface RequireRoleProps {
-  /** The roles allowed on this page. */
   roles: Role[];
   children: ReactNode;
 }

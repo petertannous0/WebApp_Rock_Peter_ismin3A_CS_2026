@@ -6,7 +6,6 @@ import { useLogoutOn401 } from '../../auth/useLogoutOn401';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import type { Student } from '../../types';
 
-/** The form, as the inputs give it: strings, even for the ids of the selects. */
 interface Draft {
   id?: number;
   firstName: string;
@@ -31,10 +30,6 @@ function toDraft(student: Student): Draft {
   };
 }
 
-/**
- * The students, at /admin/eleves. Each one has a company, a tutor of that
- * company, and an academic tutor: the first two members of their jury.
- */
 export const StudentsPage = () => {
   const { token } = useAuth();
   const queryClient = useQueryClient();

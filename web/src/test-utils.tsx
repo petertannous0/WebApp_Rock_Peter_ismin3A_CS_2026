@@ -7,15 +7,6 @@ import App from './App';
 import { AuthProvider, TOKEN_KEY } from './auth/AuthProvider';
 import type { Role } from './types';
 
-/**
- * The helpers of the tests. No browser, no API during the tests: the URL
- * lives in a MemoryRouter, and `fetch` is replaced by a fake API.
- */
-
-/**
- * The whole app, as main.tsx mounts it, at `route`. With a token, the user
- * is already logged in, as after a reload. A failed request is not retried.
- */
 export function renderApp(route = '/', { token }: { token?: string } = {}) {
   if (token) localStorage.setItem(TOKEN_KEY, token);
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -31,12 +22,10 @@ export function renderApp(route = '/', { token }: { token?: string } = {}) {
   );
 }
 
-/** One component alone, with a router around it for its <Link>. */
 export function renderWithRouter(ui: ReactElement) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 
-/** One email per role, for the tokens of the tests. */
 export const EMAILS: Record<Role, string> = {
   ADMIN: 'admin@castelmont.fr',
   ENSEIGNANT: 'paul.durand@castelmont.fr',
@@ -57,7 +46,6 @@ export function makeToken({ role = 'ADMIN', email = EMAILS[role], expired = fals
   return `${header}.${payload}.fake-signature`;
 }
 
-/** What the fake API answers to one request. */
 type Handler = (request: Request) => Response | Promise<Response>;
 
 /**
@@ -87,12 +75,10 @@ export function fakeApi(fakes: Record<string, Handler>): Request[] {
   return requests;
 }
 
-/** An error the way NestJS sends them. */
 export function nestError(status: number, message: string | string[]): Response {
   return Response.json({ statusCode: status, message }, { status });
 }
 
-/** The path and query of a request, without the host: "/defenses?day=1". */
 export function pathOf(request: Request): string {
   const { pathname, search } = new URL(request.url);
   return pathname + search;

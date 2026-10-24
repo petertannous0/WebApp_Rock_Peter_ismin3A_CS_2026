@@ -29,14 +29,12 @@ export function prismaMock() {
     slot: model(),
     teacherUnavailability: model(),
     defense: model(),
-    /** The array form: the operations were built by the service; the fake only awaits them. */
     $transaction: vi.fn(async (operations: unknown[]) => Promise.all(operations)),
   };
 }
 
 export type PrismaMock = ReturnType<typeof prismaMock>;
 
-/** The mock, typed as the real service for the constructors that expect it. */
 export function asPrisma(mock: PrismaMock): PrismaService {
   return mock as unknown as PrismaService;
 }

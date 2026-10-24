@@ -8,10 +8,6 @@ import type { Company, CompanyTutor, CompanyTutorInput } from '../../types';
 
 const EMPTY_TUTOR = { firstName: '', lastName: '', email: '', companyId: '' };
 
-/**
- * Companies and their tutors, at /admin/entreprises. A tutor has no account:
- * name and email only. Added and edited, never deleted.
- */
 export const CompaniesPage = () => {
   const { token } = useAuth();
   const queryClient = useQueryClient();

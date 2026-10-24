@@ -1,8 +1,6 @@
 import type { Role } from '../types';
 
-/** What the token of the API carries: the same fields as `JwtPayload` in the API, plus the dates. */
 export interface JwtPayload {
-  /** The user id: that is the JWT convention */
   sub: number;
   email: string;
   role: Role;
@@ -31,7 +29,6 @@ export function decodePayload(token: string): JwtPayload | null {
   }
 }
 
-/** True when the token has expired, or will in the next few seconds. */
 export function isExpired(payload: JwtPayload, now = Date.now()): boolean {
   return payload.exp * 1000 <= now + 5_000;
 }

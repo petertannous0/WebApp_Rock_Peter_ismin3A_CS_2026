@@ -50,7 +50,6 @@ export class SessionService {
     };
   }
 
-  /** The session, or null when none has been created. */
   async find(): Promise<SessionView | null> {
     const row = await this.prisma.session.findFirst({
       include: {

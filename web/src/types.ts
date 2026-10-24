@@ -1,14 +1,7 @@
-/**
- * The types the API answers: the same shapes as the `*View` / `Account`
- * interfaces of the API. The front and the back speak about the same things.
- */
-
 export type Role = 'ADMIN' | 'ENSEIGNANT' | 'ELEVE';
 
-/** The roles an admin can give an account. */
 export type AccountRole = 'ENSEIGNANT' | 'ELEVE';
 
-/** What the user reads, in French. */
 export const ROLE_LABELS: Record<Role, string> = {
   ADMIN: 'Administration',
   ENSEIGNANT: 'Enseignant',
@@ -30,9 +23,7 @@ export interface Teacher {
   lastName: string;
   email: string;
   hasAccount: boolean;
-  /** When they last saved their unavailability; absent: not answered. */
   availabilitySubmittedAt?: string;
-  /** How many students they are the academic tutor of. */
   tutoredCount: number;
 }
 
@@ -45,18 +36,14 @@ export interface Student {
   company: { id: number; name: string };
   companyTutor: { id: number; name: string; email: string };
   academicTutor: { id: number; name: string };
-  /** True when their defense is placed. */
   placed: boolean;
 }
 
-/** What POST /users expects. */
 export interface NewAccount {
   role: AccountRole;
   personId: number;
   password: string;
 }
-
-// ─── F1: the session, the people, the availability ─────────────────────────
 
 export type HalfDay = 'MORNING' | 'AFTERNOON';
 
@@ -69,7 +56,6 @@ export interface Room {
 
 export interface Slot {
   id: number;
-  /** "YYYY-MM-DD" */
   day: string;
   dayIndex: number;
   indexInDay: number;
@@ -155,11 +141,8 @@ export interface TeacherAvailability {
   unavailable: HalfDaySlot[];
 }
 
-// ─── F2: placement ─────────────────────────────────────────────────────────
-
 export type Severity = 'BLOCKING' | 'WARNING';
 
-/** A broken rule, the way the API sends it: the French sentence is ready. */
 export interface Violation {
   rule: string;
   severity: Severity;
@@ -168,11 +151,8 @@ export interface Violation {
 
 export interface CheckResult {
   violations: Violation[];
-  /** No blocking violation. */
   canSave: boolean;
-  /** Only warnings: "save anyway" with force. */
   needsForce: boolean;
-  /** Informational: the company tutor already comes on another day. */
   hint?: string;
 }
 
@@ -181,7 +161,6 @@ export interface Proposal {
   secondTeacherId: number;
   slotId: number;
   roomId: number;
-  /** When moving: the defense being moved. */
   defenseId?: number;
 }
 
@@ -198,11 +177,8 @@ export interface Defense {
   academicTutor: { id: number; name: string };
   secondTeacher: { id: number; name: string };
   companyTutor: { id: number; name: string; email: string };
-  /** Its conflicts now: a teacher may have become unavailable since it was placed. */
   violations: Violation[];
 }
-
-// ─── F3: schedules ─────────────────────────────────────────────────────────
 
 export interface Jury {
   academicTutor: string;
@@ -210,7 +186,6 @@ export interface Jury {
   companyTutor: string;
 }
 
-/** Where and when: what everybody needs to come. */
 export interface When {
   day: string;
   startMinutes: number;
@@ -228,7 +203,6 @@ export interface TeacherDefense extends When {
 
 export interface StudentSchedule {
   studentName: string;
-  /** null while the defense is not placed. */
   defense: (When & { jury: Jury }) | null;
 }
 

@@ -5,11 +5,6 @@ import { Prisma } from '../src/generated/prisma/client.js';
 import { generateSlots } from '../src/session/slots.js';
 import { asPrisma, prismaMock, type PrismaMock } from './prisma-mock.js';
 
-/**
- * The service around the pure checker: it loads the state, refuses or saves.
- * The rules themselves are tested in conflicts.spec.ts.
- */
-
 const monday = new Date('2027-06-21T00:00:00.000Z');
 const slots = generateSlots(monday).map((slot, i) => ({ ...slot, id: i + 1, sessionId: 1 }));
 const rooms = [
@@ -24,11 +19,9 @@ const company = { id: 1, name: 'Provence Microsystèmes' };
 const jean = { id: 10, firstName: 'Jean', lastName: 'Roux', email: 'jean.roux@provence.fr' };
 const lea = { id: 20, firstName: 'Léa', lastName: 'Martin', companyId: 1, company, companyTutorId: 10, academicTutorId: 1 };
 
-/** Léa, Monday 9:10 (slot 2), room A, second teacher Blanc: valid. */
 const proposal = { studentId: 20, secondTeacherId: 3, slotId: 2, roomId: 1 };
 const THURSDAY_13_30 = 3 * 12 + 6 + 1;
 
-/** A defense row as findUnique/findMany with `include` returns it. */
 function defenseRow(id: number, fields = proposal) {
   const slot = slots.find((s) => s.id === fields.slotId)!;
   return {

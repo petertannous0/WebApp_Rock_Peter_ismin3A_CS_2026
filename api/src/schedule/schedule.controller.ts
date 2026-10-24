@@ -12,11 +12,6 @@ function mapErrors(error: unknown): never {
   throw error;
 }
 
-/**
- *   GET /me/defenses               the teacher's defenses, day by day
- *   GET /me/defense                the student's defense, or null
- *   GET /company-tutors/schedule   each company tutor's defenses, for the admin's emails
- */
 @Controller()
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth()

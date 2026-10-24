@@ -1,13 +1,5 @@
-# Soutenances de stage: the whole application, from one command.
-#
-#   docker compose up
-#
 # No .env to create: every variable has its default here. The database is a
 # SQLite file in the named volume `data`, shared by `migrate` and `api`.
-#
-#   migrate  applies the migrations, seeds, then exits (code 0)
-#   api      starts once migrate has succeeded; healthy when GET /health answers
-#   web      starts once api is healthy; nginx serves the built front
 
 name: soutenances
 

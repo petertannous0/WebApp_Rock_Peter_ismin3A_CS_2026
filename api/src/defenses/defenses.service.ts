@@ -34,7 +34,6 @@ function toViolationView(violation: Violation): ViolationView {
 export class DefensesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Everything the checker needs, for the session. One read per table. */
   async loadState(): Promise<PlacementState> {
     const session = await this.prisma.session.findFirst({ orderBy: { id: 'asc' } });
     if (!session) throw new InvalidReference('No session yet: create it first');
@@ -67,7 +66,6 @@ export class DefensesService {
     };
   }
 
-  /** The ids of the proposal exist in this session: otherwise a 422, never a rule. */
   private checkIds(proposal: ProposedDefense, state: PlacementState): void {
     const exists = (list: { id: number }[], id: number) => list.some((item) => item.id === id);
     if (!exists(state.students, proposal.studentId)) throw new InvalidReference(`Student ${proposal.studentId} does not exist`);
@@ -89,14 +87,12 @@ export class DefensesService {
     };
   }
 
-  /** The dry run: what would be wrong with this placement, without saving it. */
   async check(proposal: ProposedDefense): Promise<CheckResult> {
     const state = await this.loadState();
     this.checkIds(proposal, state);
     return this.result(proposal, state);
   }
 
-  /** Runs every check, then saves with `save`, or throws PlacementRefused with the whole list. */
   private async checkThenSave(proposal: ProposedDefense, force: boolean, save: () => Promise<{ id: number }>): Promise<DefenseView> {
     const state = await this.loadState();
     this.checkIds(proposal, state);
@@ -123,7 +119,6 @@ export class DefensesService {
     );
   }
 
-  /** A move: new slot, room or second teacher. The same checks, the defense left out of the state. */
   async move(id: number, patch: { slotId?: number; roomId?: number; secondTeacherId?: number }, force = false): Promise<DefenseView> {
     const defense = await this.prisma.defense.findUnique({ where: { id } });
     if (!defense) throw new NotFound('Defense', id);
@@ -155,7 +150,6 @@ export class DefensesService {
     student: { include: { company: true, companyTutor: true, academicTutor: true } },
   } as const;
 
-  /** Every placed defense, in time order, each with its current conflicts. */
   async findAll(): Promise<DefenseView[]> {
     const [rows, state] = await Promise.all([
       this.prisma.defense.findMany({ include: this.include, orderBy: [{ slot: { dayIndex: 'asc' } }, { slot: { indexInDay: 'asc' } }, { room: { name: 'asc' } }] }),

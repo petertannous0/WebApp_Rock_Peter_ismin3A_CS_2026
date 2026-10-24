@@ -5,8 +5,6 @@ import { SESSION } from '../fixtures';
 import type { CompanyTutorSchedule, StudentSchedule, TeacherDefense } from '../types';
 import { fakeApi, makeToken, renderApp } from '../test-utils';
 
-/** F3: each role sees its own schedule. */
-
 const jury = { academicTutor: 'Paul Durand', secondTeacher: 'Anna Roux', companyTutor: 'Jean Roux' };
 const salleA = { roomName: 'Salle A', videoLink: 'https://visio.castelmont.fr/salle-a' };
 

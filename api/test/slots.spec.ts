@@ -1,6 +1,5 @@
 import { dayOfSession, generateSlots, isMonday } from '../src/session/slots.js';
 
-/** Monday 21 June 2027, the seeded session. */
 const monday = new Date(Date.UTC(2027, 5, 21));
 
 const hhmm = (minutes: number) => `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`;

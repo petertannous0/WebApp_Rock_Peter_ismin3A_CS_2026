@@ -24,7 +24,6 @@ async function bootstrap() {
   // One explicit origin, never '*': the front, on 8080 in compose, 5173 in development.
   app.enableCors({ origin: process.env.WEB_ORIGIN ?? 'http://localhost:5173' });
 
-  // Swagger UI on /docs, the OpenAPI document on /docs-json.
   const config = new DocumentBuilder()
     .setTitle('Soutenances de stage API')
     .setDescription('Get a token with POST /auth/login, then paste it in "Authorize".')

@@ -11,7 +11,6 @@ const TILES = [
   { to: '/admin/comptes', title: 'Comptes', text: 'Créer les comptes des enseignants et des élèves' },
 ];
 
-/** The administration's home, at /admin. */
 export const AdminHomePage = () => {
   return (
     <section className="page">

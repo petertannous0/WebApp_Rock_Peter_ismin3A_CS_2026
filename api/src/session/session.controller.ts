@@ -35,7 +35,6 @@ import {
 } from './session.js';
 import { SessionService } from './session.service.js';
 
-/** Maps the domain errors of the session to HTTP answers. */
 function toHttp(error: unknown): never {
   if (error instanceof NoSession || error instanceof RoomNotFound) throw new NotFoundException(error.message);
   if (error instanceof SessionAlreadyExists || error instanceof SessionHasDefenses || error instanceof RoomNameTaken) {

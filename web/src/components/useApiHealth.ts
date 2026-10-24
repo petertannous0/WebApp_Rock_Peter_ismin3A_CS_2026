@@ -2,7 +2,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { checkHealth, isApiDown } from '../api';
 
-/** How often the app asks GET /health. */
 const HEALTH_INTERVAL_MS = 15_000;
 
 /**

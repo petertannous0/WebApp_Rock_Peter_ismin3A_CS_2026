@@ -1,4 +1,3 @@
-/** A company, with its tutors: the admin page shows them together. */
 export interface CompanyView {
   id: number;
   name: string;
@@ -6,7 +5,6 @@ export interface CompanyView {
   tutors: CompanyTutorView[];
 }
 
-/** A company tutor: no account, name and email only. */
 export interface CompanyTutorView {
   id: number;
   firstName: string;

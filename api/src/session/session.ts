@@ -9,7 +9,6 @@ export interface RoomView {
 
 export interface SlotView {
   id: number;
-  /** "YYYY-MM-DD" */
   day: string;
   dayIndex: number;
   indexInDay: number;
@@ -17,17 +16,13 @@ export interface SlotView {
   halfDay: HalfDay;
 }
 
-/** The session, the way the API exposes it: with its rooms and its slots. */
 export interface SessionView {
   id: number;
   name: string;
-  /** The Monday, "YYYY-MM-DD" */
   startDate: string;
-  /** Monday to Friday, "YYYY-MM-DD" */
   days: string[];
   rooms: RoomView[];
   slots: SlotView[];
-  /** Placed defenses: the start date cannot change once there is one. */
   defenseCount: number;
 }
 

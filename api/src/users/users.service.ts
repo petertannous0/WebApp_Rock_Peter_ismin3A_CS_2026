@@ -6,10 +6,6 @@ import { EmailAlreadyUsed, PersonAlreadyHasAccount, PersonNotFound, type Account
 
 type UserWithPeople = User & { teacher: Teacher | null; student: Student | null };
 
-/**
- * Accounts are created by the admin only, for a teacher or a student who
- * already exists: the login email is theirs, the admin types the first password.
- */
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}

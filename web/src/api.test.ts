@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { ApiDownError, ApiError, checkHealth, isApiDown, throwIfNotOk } from './api';
 import { nestError } from './test-utils';
 
-/** The error of a promise, or undefined when it resolves. */
 async function rejection(promise: Promise<unknown>): Promise<unknown> {
   return promise.then(
     () => undefined,

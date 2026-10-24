@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-/** The fields every person has: teachers, students, company tutors. */
 export class PersonDto {
   @ApiProperty({ example: 'Léa' })
   @IsString()
@@ -18,7 +17,6 @@ export class PersonDto {
   email!: string;
 }
 
-/** The same fields, each optional: a partial update. */
 export class PersonPatchDto {
   @ApiPropertyOptional({ example: 'Léa' })
   @IsOptional()

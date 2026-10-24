@@ -10,19 +10,16 @@ import type { OtherDefense, Violation } from './conflicts.js';
 
 const DAY = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
 
-/** "2027-06-21" → "lundi 21 juin" */
 export function frenchDay(day: string): string {
   return DAY.format(new Date(`${day}T00:00:00Z`));
 }
 
-/** 550 → "9 h 10" */
 export function frenchTime(minutes: number): string {
   return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')}`;
 }
 
 const HALF_DAY: Record<HalfDay, string> = { MORNING: 'matin', AFTERNOON: 'après-midi' };
 
-/** "le lundi 21 juin à 9 h 10, Salle B" */
 function when(other: OtherDefense): string {
   return `le ${frenchDay(other.day)} à ${frenchTime(other.startMinutes)}, ${other.roomName}`;
 }
@@ -56,7 +53,6 @@ export function describeViolation(violation: Violation): string {
   }
 }
 
-/** The grouping hint: "Jean Roux vient déjà le mercredi 23 juin pour une autre soutenance." */
 export function describeCompanyTutorDays(companyTutorName: string, days: string[]): string | undefined {
   if (days.length === 0) return undefined;
   const list = days.map(frenchDay).join(' et le ');

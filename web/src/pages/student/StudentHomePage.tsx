@@ -5,10 +5,6 @@ import { useLogoutOn401 } from '../../auth/useLogoutOn401';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { formatDay, formatTime } from '../../format';
 
-/**
- * The student's defense, at /eleve: slot, room, video link, jury (F3). Names
- * only (decision P6-b). A change is asked to the scolarité, not here.
- */
 export const StudentHomePage = () => {
   const { token } = useAuth();
   const schedule = useQuery({ queryKey: ['my-defense'], queryFn: () => fetchMyDefense(token!) });

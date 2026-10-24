@@ -11,13 +11,11 @@ const ROLE_LABELS: Record<TeacherDefense['role'], string> = {
   SECOND_TEACHER: 'second enseignant',
 };
 
-/** The teacher's defenses, day by day (decision P6-a): when, where, whom, and the rest of the jury. */
 export const TeacherSchedule = () => {
   const { token } = useAuth();
   const defenses = useQuery({ queryKey: ['my-defenses'], queryFn: () => fetchMyDefenses(token!) });
   useLogoutOn401(defenses.error);
 
-  // Already in time order: grouped by day, keeping that order.
   const days = [...new Set((defenses.data ?? []).map((d) => d.day))];
 
   return (

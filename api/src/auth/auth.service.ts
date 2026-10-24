@@ -4,7 +4,6 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import type { JwtPayload } from './auth.guard.js';
 import { verifyPassword } from './password.js';
 
-/** Emails are compared lower-cased and trimmed: "Nadia@Castelmont.fr " is the same account. */
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }

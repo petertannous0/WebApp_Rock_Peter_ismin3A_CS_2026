@@ -17,7 +17,6 @@ import { CreateAccountDto } from './dto/create-account.dto.js';
 import { EmailAlreadyUsed, PersonAlreadyHasAccount, PersonNotFound, type Account } from './user.js';
 import { UsersService } from './users.service.js';
 
-/** Accounts: the admin's business only. */
 @Controller('users')
 @Roles('ADMIN')
 @UseGuards(AuthGuard, RolesGuard)

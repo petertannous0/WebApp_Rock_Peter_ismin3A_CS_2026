@@ -8,7 +8,6 @@ import { ViolationList } from '../../components/ViolationList';
 import { formatDay, formatTime } from '../../format';
 import type { Defense, Proposal, Session, Student, Teacher } from '../../types';
 
-/** What the panel is for: placing a new defense (slot, room or student may be pre-chosen), or moving one. */
 export type Selection =
   | { mode: 'place'; studentId?: number; slotId?: number; roomId?: number }
   | { mode: 'move'; defense: Defense };
@@ -38,11 +37,6 @@ function initialDraft(selection: Selection): Draft {
   return { studentId: text(selection.studentId), secondTeacherId: '', slotId: text(selection.slotId), roomId: text(selection.roomId) };
 }
 
-/**
- * Place or move one defense. As soon as the four choices are made, the API
- * checks every rule (dry run) and the panel lists what is wrong, before
- * anything is saved: Nadia sees her mistake as she makes it.
- */
 export const PlacementPanel = ({ selection, session, students, teachers, onClose }: PlacementPanelProps) => {
   const { token } = useAuth();
   const queryClient = useQueryClient();
@@ -162,7 +156,6 @@ export const PlacementPanel = ({ selection, session, students, teachers, onClose
           </select>
         </div>
 
-        {/* The live check: what the API would refuse, before saving. */}
         <div aria-live="polite">
           {complete && check.isFetching && (
             <p className="status" role="status">

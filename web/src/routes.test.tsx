@@ -4,12 +4,6 @@ import { COMPANIES, SESSION, STUDENTS, TEACHERS } from './fixtures';
 import type { Role } from './types';
 import { fakeApi, makeToken, renderApp } from './test-utils';
 
-/**
- * Every page, opened by each role: the page itself for its role, the home of
- * their own role for the others, the login when logged out. The pages only
- * hide; the API refuses for real (api/test/roles.http.spec.ts).
- */
-
 const PAGES: [path: string, role: Role, heading: string][] = [
   ['/admin', 'ADMIN', 'Tableau de bord'],
   ['/admin/placement', 'ADMIN', 'Placement des soutenances'],

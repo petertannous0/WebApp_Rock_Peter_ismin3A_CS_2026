@@ -14,21 +14,14 @@ export type HalfDay = 'MORNING' | 'AFTERNOON';
 export const SLOT_MINUTES = 40;
 export const SLOTS_PER_HALF_DAY = 6;
 export const DAYS_IN_SESSION = 5;
-/** 8:30 */
 export const MORNING_START = 8 * 60 + 30;
-/** 13:30 */
 export const AFTERNOON_START = 13 * 60 + 30;
-/** dayIndex of Thursday: 0 is Monday. */
 export const THURSDAY = 3;
 
 export interface SlotSpec {
-  /** The day, at midnight UTC. */
   date: Date;
-  /** 0 = Monday … 4 = Friday */
   dayIndex: number;
-  /** 0 … 11 */
   indexInDay: number;
-  /** Minutes since midnight */
   startMinutes: number;
   halfDay: HalfDay;
 }
@@ -40,13 +33,11 @@ export function isMonday(date: Date): boolean {
   return date.getUTCDay() === 1;
 }
 
-/** The day `dayIndex` days after `monday`, at midnight UTC. */
 export function dayOfSession(monday: Date, dayIndex: number): Date {
   const midnight = Date.UTC(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate());
   return new Date(midnight + dayIndex * DAY_MS);
 }
 
-/** The 60 slots of a session that starts on `monday`, in chronological order. */
 export function generateSlots(monday: Date): SlotSpec[] {
   const slots: SlotSpec[] = [];
   for (let dayIndex = 0; dayIndex < DAYS_IN_SESSION; dayIndex++) {

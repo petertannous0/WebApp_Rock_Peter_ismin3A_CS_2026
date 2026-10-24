@@ -7,10 +7,6 @@ import { hashPassword } from '../src/auth/password.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { prismaMock, type PrismaMock } from './prisma-mock.js';
 
-/**
- * The whole application over HTTP, with the guards for real, and a fake
- * Prisma in place of the database: login, 401, 403 by role, no DB needed.
- */
 describe('Auth and roles, over HTTP', () => {
   let app: INestApplication;
   let prisma: PrismaMock;

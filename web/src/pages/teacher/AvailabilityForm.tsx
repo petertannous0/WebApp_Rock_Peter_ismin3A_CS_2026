@@ -10,11 +10,6 @@ import type { HalfDay, HalfDaySlot } from '../../types';
 const HALF_DAYS: HalfDay[] = ['MORNING', 'AFTERNOON'];
 const key = (day: string, halfDay: HalfDay) => `${day}|${halfDay}`;
 
-/**
- * The teacher's unavailability: 5 days × 2 half-days, a box ticked when they
- * are NOT available. One save replaces the whole list and records that they
- * answered, even with nothing ticked (decision P4-b).
- */
 export const AvailabilityForm = () => {
   const { token } = useAuth();
   const queryClient = useQueryClient();
@@ -24,7 +19,6 @@ export const AvailabilityForm = () => {
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [saved, setSaved] = useState(false);
 
-  // The boxes start from what the API holds, once it has answered.
   useEffect(() => {
     if (mine.data) setChecked(new Set(mine.data.unavailable.map((h) => key(h.day, h.halfDay))));
   }, [mine.data]);

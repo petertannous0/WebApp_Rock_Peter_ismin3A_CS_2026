@@ -9,9 +9,6 @@ generator client {
   importFileExtension = "js"
 }
 
-// ─── Accounts ──────────────────────────────────────────────────────────────
-
-/// The three roles of the client. Company tutors have no account.
 enum Role {
   ADMIN
   ENSEIGNANT
@@ -32,8 +29,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-// ─── People ────────────────────────────────────────────────────────────────
 
 model Teacher {
   id        Int    @id @default(autoincrement())
@@ -67,7 +62,6 @@ model Company {
   updatedAt DateTime @updatedAt
 }
 
-/// No account: name and email only, entered by the admin.
 model CompanyTutor {
   id        Int    @id @default(autoincrement())
   firstName String
@@ -113,8 +107,6 @@ model Student {
   @@index([academicTutorId])
 }
 
-// ─── The session ───────────────────────────────────────────────────────────
-
 enum HalfDay {
   MORNING
   AFTERNOON
@@ -137,9 +129,7 @@ model Session {
 model Room {
   id        Int    @id @default(autoincrement())
   name      String
-  /// The same link for every defense in this room.
   videoLink String
-  /// The client's rule: 2 of the 4 rooms are unavailable on Thursday afternoon.
   closedThursdayAfternoon Boolean @default(false)
 
   session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
@@ -150,10 +140,8 @@ model Room {
   @@unique([sessionId, name])
 }
 
-/// A 40-minute slot, generated with the session: 12 per day, 5 days.
 model Slot {
   id           Int      @id @default(autoincrement())
-  /// The day, at midnight UTC.
   date         DateTime
   /// 0 = Monday … 4 = Friday.
   dayIndex     Int
@@ -171,10 +159,8 @@ model Slot {
   @@unique([sessionId, dayIndex, indexInDay])
 }
 
-/// A half-day where a teacher is NOT available. No preferences.
 model TeacherUnavailability {
   id      Int      @id @default(autoincrement())
-  /// The day, at midnight UTC.
   date    DateTime
   halfDay HalfDay
 
@@ -184,8 +170,6 @@ model TeacherUnavailability {
   @@unique([teacherId, date, halfDay])
 }
 
-// ─── Placement ─────────────────────────────────────────────────────────────
-
 /// A placed defense. The jury is the student's academic tutor + `secondTeacher`
 /// + the student's company tutor: the first and last are read from the student,
 /// never copied here.
@@ -193,7 +177,6 @@ model Defense {
   id Int @id @default(autoincrement())
 
   student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  /// One defense per student.
   studentId Int     @unique
 
   slot   Slot @relation(fields: [slotId], references: [id])
@@ -208,7 +191,6 @@ model Defense {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  /// One defense per room and slot.
   @@unique([slotId, roomId])
   @@index([secondTeacherId])
 }
